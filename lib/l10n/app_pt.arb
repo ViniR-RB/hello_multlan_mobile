@@ -1,0 +1,13 @@
+{
+  "@@locale": "pt",
+  "networkError": "Sem conexão com a internet.",
+  "invalidCredentials": "E-mail ou senha inválidos.",
+  "unknownError": "Algo deu errado.",
+  "localStorageNotFoundKey": "A chave não foi encontrada no armazenamento local.",
+  "unauthorized": "Usuário não autorizado.",
+  "successInLogin": "Login realizado com sucesso.",
+  "locationServiceDisabled": "O serviço de localização está desativado. Por favor, ative-o nas configurações do seu dispositivo.",
+  "locationPermissionDenied": "Permissão de localização negada. Por favor, conceda permissão para acessar sua localização.",
+  "locationPermissionDeniedForever": "Permissão de localização negada permanentemente. Por favor ative-a nas configurações do seu dispositivo."
+
+}

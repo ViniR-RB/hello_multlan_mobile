@@ -13,6 +13,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  flutter_localizations: ^0.3.3
+
   cupertino_icons: ^1.0.8
   envied: ^1.2.0
   flutter_modular: ^6.4.1
@@ -20,6 +22,7 @@ dependencies:
   logger: ^2.6.0 
   json_annotation: ^4.9.0
   dio: ^5.9.0
+  flutter_secure_storage: ^9.2.4
 
 dev_dependencies:
   flutter_test:
@@ -35,6 +38,6 @@ dev_dependencies:
 
 flutter:
 
- 
+  generate: true
   uses-material-design: true
 

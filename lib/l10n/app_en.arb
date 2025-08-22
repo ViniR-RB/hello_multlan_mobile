@@ -1,0 +1,13 @@
+{
+  "@@locale": "en",
+  "networkError": "networkError",
+  "invalidCredentials": "E-mail or password is invalid.",
+  "unknownError": "unknownError",
+  "localStorageNotFoundKey": "The key was not found in local storage.",
+  "unauthorized": "User is not authorized.",
+  "successInLogin": "Login successful.",
+  "locationServiceDisabled": "Location services are disabled. Please enable them in your device settings.",
+  "locationPermissionDenied": "Location permission denied. Please grant permission to access your location.",
+  "locationPermissionDeniedForever": "Location permission denied permanently. Please enable it in your device settings."
+
+}
