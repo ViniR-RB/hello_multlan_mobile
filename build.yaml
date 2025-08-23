@@ -9,7 +9,7 @@ targets:
         options:
           field_rename: none 
         generate_for:
-          - lib/app/modules/**/data/**/*.dart
+          - lib/app/modules/**/*.dart
       retrofit_generator:
         generate_for:
-          - lib/app/modules/**/data/**/*.dart
+          - lib/app/modules/**/*.dart
