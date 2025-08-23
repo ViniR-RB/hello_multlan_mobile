@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:hello_multlan/app/core/extensions/error_translator.dart';
 import 'package:hello_multlan/app/core/states/command_state.dart';
 import 'package:hello_multlan/app/ui/splash/command/user_logged.dart';
 import 'package:hello_multlan/app/ui/splash/splash_controller.dart';
@@ -19,7 +20,7 @@ class SplashPage extends StatefulWidget {
   State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> {
+class _SplashPageState extends State<SplashPage> with ErrorTranslator {
   @override
   void initState() {
     super.initState();
@@ -32,7 +33,7 @@ class _SplashPageState extends State<SplashPage> {
 
     if (state case CommandSuccess(value: final isLogged)) {
       final String path = switch (isLogged) {
-        true => '/home',
+        true => '/box',
         false => '/login',
         _ => '/login',
       };
@@ -40,8 +41,9 @@ class _SplashPageState extends State<SplashPage> {
     }
     if (state case CommandFailure(exception: final exception)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${exception.message}')),
+        SnackBar(content: Text(translateError(context, exception.code))),
       );
+      Modular.to.navigate("/login");
     }
   }
 
