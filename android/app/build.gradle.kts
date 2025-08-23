@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "dev.vini.br.hello_multlan"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = project.findProperty("android.ndkVersion") as String
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
