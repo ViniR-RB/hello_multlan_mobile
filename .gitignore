@@ -122,3 +122,8 @@ out/
 
 # Generated localization files
 lib/l10n/*.dart
+lib/gen/
+
+# Firebase
+**/firebase_options.dart
+firebase.json

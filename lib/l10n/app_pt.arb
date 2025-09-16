@@ -8,6 +8,15 @@
   "successInLogin": "Login realizado com sucesso.",
   "locationServiceDisabled": "O serviço de localização está desativado. Por favor, ative-o nas configurações do seu dispositivo.",
   "locationPermissionDenied": "Permissão de localização negada. Por favor, conceda permissão para acessar sua localização.",
-  "locationPermissionDeniedForever": "Permissão de localização negada permanentemente. Por favor ative-a nas configurações do seu dispositivo."
-
+  "locationPermissionDeniedForever": "Permissão de localização negada permanentemente. Por favor ative-a nas configurações do seu dispositivo.",
+  "imagePickerNotFound": "Nenhuma imagem foi selecionada",
+  "cameraAccessDenied": "Ajuste as permissões de acesso à galeria de celulares para continuar",
+  "photoAccessDenied": "Ajuste as permissoes de acesso a galeria do celular para continuar",
+  "timeout": "Tempo excedido nessa operação",
+  "successInCreateBox": "Criação da Caixa foi um sucesso",
+  "noteMinLength": "A anotação deve ter pelo menos 3 caracteres",
+  "filledSpaceGreaterThanFreeSpace": "Quantidade do espaco preenchido nao pode ser maio que a quantidade de espaço livre",
+  "fieldRequired": "Campo é requerido",
+  "mapNotLoading": "Estamos com problema de carregar o mapa, tente recentemente mais tarde"
+  
 }

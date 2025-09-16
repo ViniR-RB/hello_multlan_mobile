@@ -13,18 +13,26 @@ enum Role {
 
 @JsonSerializable()
 class UserModel {
-  final String id;
+  final int id;
   final String name;
   final String email;
 
   @JsonKey(unknownEnumValue: Role.INTERNAL)
   final Role role;
 
+  final bool isActive;
+  final String? fcmToken;
+  final DateTime createdAt;
+  final DateTime updatedAt;
   UserModel({
     required this.id,
     required this.name,
     required this.email,
     required this.role,
+    required this.isActive,
+    required this.fcmToken,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>

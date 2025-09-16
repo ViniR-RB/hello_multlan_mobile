@@ -15,6 +15,18 @@ mixin ErrorTranslator<T extends StatefulWidget> on State<T> {
         return l10n.unauthorized;
       case "locationServiceDisabled":
         return l10n.locationServiceDisabled;
+      case "imagePickerNotFound":
+        return l10n.imagePickerNotFound;
+      case "timeout":
+        return l10n.timeout;
+      case "noteMinLength":
+        return l10n.noteMinLength;
+      case "filledSpaceGreaterThanFreeSpace":
+        return l10n.filledSpaceGreaterThanFreeSpace;
+      case "fieldRequired":
+        return l10n.fieldRequired;
+      case "mapNotLoading":
+        return l10n.mapNotLoading;
       default:
         return l10n.unknownError;
     }

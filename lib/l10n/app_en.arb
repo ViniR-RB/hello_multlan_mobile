@@ -8,6 +8,14 @@
   "successInLogin": "Login successful.",
   "locationServiceDisabled": "Location services are disabled. Please enable them in your device settings.",
   "locationPermissionDenied": "Location permission denied. Please grant permission to access your location.",
-  "locationPermissionDeniedForever": "Location permission denied permanently. Please enable it in your device settings."
-
+  "locationPermissionDeniedForever": "Location permission denied permanently. Please enable it in your device settings.",
+  "imagePickerNotFound": "No image selected",
+  "cameraAccessDenied": "Adjust as camera settings to allow access to it",
+  "photoAccessDenied": "Adjust cell phone gallery access permissions to continue",
+  "timeout": "Time Exceeded in this operation",
+  "successInCreateBox": "Create Box Successfully",
+  "noteMinLength": "Note must be at least 3 characters long",
+  "filledSpaceGreaterThanFreeSpace": "Filled space not greater than free space",
+  "fieldRequired": "Field is required",
+  "mapNotLoading": "We are having trouble loading the map, try recently later"
 }

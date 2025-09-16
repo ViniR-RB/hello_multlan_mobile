@@ -1,10 +1,14 @@
 targets:
   $default:
     sources:
+      - $package$
       - lib/**
       - .env
-      - $package$
+      - pubspec.yaml
     builders:
+      flutter_gen_runner:
+        options:
+          output: lib/app/gen/
       json_serializable:
         options:
           field_rename: none 

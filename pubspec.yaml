@@ -1,8 +1,7 @@
 name: hello_multlan
 description: "A new Flutter project."
 
-publish_to: 'none' 
-
+publish_to: 'none'
 
 version: 1.0.0+1
 
@@ -10,36 +9,50 @@ environment:
   sdk: ^3.8.1
 
 dependencies:
+  cached_network_image: ^3.4.1
+  cupertino_icons: ^1.0.8
+  dio: ^5.9.0
+  envied: ^1.2.0
+
+  firebase_core: ^4.1.0
+  firebase_messaging: ^16.0.1
   flutter:
     sdk: flutter
-
+  flutter_local_notifications: ^19.4.1
   flutter_localization: ^0.3.3
-
-  cupertino_icons: ^1.0.8
-  envied: ^1.2.0
-  flutter_modular: ^6.4.1
-  retrofit: ^4.6.0
-  logger: ^2.6.0 
-  json_annotation: ^4.9.0
-  dio: ^5.9.0
-  flutter_secure_storage: ^9.2.4
   flutter_localizations:
     sdk: flutter
+  flutter_map: ^8.2.1
+  flutter_modular: ^6.4.1
+  flutter_secure_storage: ^9.2.4
+  geolocator: ^14.0.2
+  image_picker: ^1.2.0
+  json_annotation: ^4.9.0
+  latlong2: ^0.9.1
+  loading_animation_widget: ^1.3.0
+  logger: ^2.6.0
+  lucid_validation: ^1.3.1
+  retrofit: ^4.6.0
+  timeago: ^3.7.1
+  top_snackbar_flutter: ^3.3.0
 
 dev_dependencies:
+  build_runner: ^2.7.0
+  envied_generator: ^1.2.0
+  flutter_gen_runner: ^5.11.0
+  flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
-
-
-  flutter_lints: ^5.0.0
-  envied_generator: ^1.2.0
-  build_runner: ^2.7.0
   json_serializable: ^6.10.0
   retrofit_generator: ^10.0.1
-
 
 flutter:
 
   generate: true
   uses-material-design: true
 
+  assets:
+    - assets/images/background_1.png
+    - assets/images/logo_completa.png
+    - assets/images/logo.png
+    - assets/images/marker-icon.png

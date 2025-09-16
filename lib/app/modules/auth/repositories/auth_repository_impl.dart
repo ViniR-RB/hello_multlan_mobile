@@ -2,8 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:hello_multlan/app/core/config/constants.dart';
 import 'package:hello_multlan/app/core/data/local_storage/i_local_storage.service.dart';
 import 'package:hello_multlan/app/core/either/either.dart';
+import 'package:hello_multlan/app/core/either/unit.dart';
 import 'package:hello_multlan/app/core/exceptions/app_exception.dart';
 import 'package:hello_multlan/app/core/extensions/async_result_extension.dart';
+import 'package:hello_multlan/app/modules/auth/dtos/credentials.dart';
 import 'package:hello_multlan/app/modules/auth/exceptions/auth_repository_exception.dart';
 import 'package:hello_multlan/app/modules/auth/gateway/auth_gateway.dart';
 import 'package:hello_multlan/app/modules/auth/models/user_model.dart';
@@ -56,7 +58,74 @@ class AuthRepositoryImpl implements AuthRepository {
           Failure(
             AuthRepositoryException("unauthorized", e.message, s),
           ),
-        _ => throw AuthRepositoryException("unknownError", e.message, s),
+        _ => Failure(AuthRepositoryException("unauthorized", e.message, s)),
+      };
+    }
+  }
+
+  @override
+  AsyncResult<AppException, Unit> login(Credentials credentials) async {
+    try {
+      final loginResponse = await _authGateway.login(
+        email: credentials.email,
+        password: credentials.password,
+      );
+
+      await Future.wait([
+        _localStorageService.set(
+          Constants.accessToken,
+          loginResponse.accessToken,
+        ),
+        _localStorageService.set(
+          Constants.refreshToken,
+          loginResponse.refreshToken,
+        ),
+      ]);
+      final userResultResponse = await _authGateway.getMe();
+      final fcmTokenResult = await _localStorageService.get(Constants.fcmToken);
+
+      if (userResultResponse.fcmToken == null &&
+          (fcmTokenResult.isSuccess &&
+              userResultResponse.fcmToken != fcmTokenResult.getOrThrow())) {
+        final userUpdated = await _authGateway.updateFcmToken(
+          fcmToken: fcmTokenResult.getOrThrow(),
+        );
+
+        await _localStorageService.set(
+          Constants.userKey,
+          userUpdated.toJson(),
+        );
+      }
+
+      await _localStorageService.set(
+        Constants.userKey,
+        userResultResponse.toJson(),
+      );
+
+      return Success(unit);
+    } on DioException catch (e) {
+      return switch (e) {
+        DioException(
+          response: Response(
+            statusCode: 401,
+            data: {
+              "statusCode": 401,
+              "message": "E-mail or Password is not match",
+            },
+          ),
+        ) =>
+          Failure(
+            AuthRepositoryException(
+              "invalidCredentials",
+              e.toString(),
+              e.stackTrace,
+            ),
+          ),
+        _ => throw AuthRepositoryException(
+          "unkownError",
+          e.toString(),
+          e.stackTrace,
+        ),
       };
     }
   }
