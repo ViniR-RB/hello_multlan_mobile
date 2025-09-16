@@ -53,6 +53,7 @@ flutter:
 
   assets:
     - assets/images/background_1.png
+    - assets/images/background_2.png
     - assets/images/logo_completa.png
     - assets/images/logo.png
     - assets/images/marker-icon.png

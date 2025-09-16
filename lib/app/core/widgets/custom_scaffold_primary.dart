@@ -17,7 +17,6 @@ class CustomScaffoldPrimary extends StatelessWidget {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            opacity: 0.45,
             image: Assets.images.background1.provider(),
             fit: BoxFit.cover,
           ),

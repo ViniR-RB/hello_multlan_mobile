@@ -6,12 +6,12 @@ import 'package:hello_multlan/app/core/extensions/error_translator.dart';
 import 'package:hello_multlan/app/core/extensions/loader_message.dart';
 import 'package:hello_multlan/app/core/extensions/theme_extension.dart';
 import 'package:hello_multlan/app/core/states/command_state.dart';
-import 'package:hello_multlan/app/gen/assets.gen.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/box_map_controller.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/command/get_all_boxes_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/command/watch_user_position_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/widgets/box_detail_button_sheet.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/widgets/user_location_widget.dart';
+import 'package:hello_multlan/gen/assets.gen.dart';
 import 'package:latlong2/latlong.dart';
 
 class BoxMapPage extends StatefulWidget {
