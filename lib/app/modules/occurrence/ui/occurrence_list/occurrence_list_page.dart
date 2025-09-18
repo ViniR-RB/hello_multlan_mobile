@@ -6,6 +6,7 @@ import 'package:hello_multlan/app/core/widgets/custom_scaffold_foreground.dart';
 import 'package:hello_multlan/app/modules/occurrence/repositories/models/occurence_model.dart';
 import 'package:hello_multlan/app/modules/occurrence/ui/occurrence_list/command/get_all_occurrence_command.dart';
 import 'package:hello_multlan/app/modules/occurrence/ui/occurrence_list/occurrence_list_controller.dart';
+import 'package:hello_multlan/app/modules/occurrence/ui/occurrence_list/widgets/occurrence_detail_bottom_sheet.dart';
 import 'package:hello_multlan/app/modules/occurrence/ui/occurrence_list/widgets/occurrence_list_item.dart';
 
 class OccurrenceListPage extends StatefulWidget {
@@ -72,8 +73,7 @@ class _OccurrenceListPageState extends State<OccurrenceListPage>
         _showCancelDialog(occurrence);
         break;
       case 'details':
-        // Navegar para detalhes
-        // Modular.to.pushNamed('/occurrence/details/${occurrence.id}');
+        OccurrenceDetailBottomSheet.show(context, occurrence);
         break;
     }
   }
