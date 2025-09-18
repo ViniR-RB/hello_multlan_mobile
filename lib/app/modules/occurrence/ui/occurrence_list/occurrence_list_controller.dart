@@ -6,4 +6,8 @@ class OccurrenceListController {
   OccurrenceListController({
     required GetAllOccurrenceCommand getAllOccurrenceCommand,
   }) : _getAllOccurrenceCommand = getAllOccurrenceCommand;
+
+  Future<void> getAllOccurences({
+    int take = 10,
+  }) => _getAllOccurrenceCommand.execute(take: take);
 }

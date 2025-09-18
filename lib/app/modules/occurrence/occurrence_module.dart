@@ -27,10 +27,15 @@ class OccurrenceModule extends Module {
     r.child(
       "/",
       child: (_) {
+        final GetAllOccurrenceCommand getAllOccurrenceCommand =
+            Modular.get<GetAllOccurrenceCommand>();
+        final OccurrenceListController controller = OccurrenceListController(
+          getAllOccurrenceCommand: getAllOccurrenceCommand,
+        );
+
         return OccurrenceListPage(
-          controller: OccurrenceListController(
-            getAllOccurrenceCommand: Modular.get<GetAllOccurrenceCommand>(),
-          ),
+          getAllOccurrenceCommand: getAllOccurrenceCommand,
+          controller: controller,
         );
       },
     );
