@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:hello_multlan/app/core/config/constants.dart';
+import 'package:hello_multlan/app/core/data/exceptions/local_storage_exception.dart';
 import 'package:hello_multlan/app/core/data/local_storage/i_local_storage.service.dart';
 import 'package:hello_multlan/app/core/either/either.dart';
 import 'package:hello_multlan/app/core/either/unit.dart';
@@ -127,6 +128,20 @@ class AuthRepositoryImpl implements AuthRepository {
           e.stackTrace,
         ),
       };
+    }
+  }
+
+  @override
+  AsyncResult<AppException, Unit> logout() async {
+    try {
+      await Future.wait([
+        _localStorageService.remove(Constants.accessToken),
+        _localStorageService.remove(Constants.refreshToken),
+        _localStorageService.remove(Constants.userKey),
+      ]);
+      return Success(unit);
+    } on LocalStorageException catch (e) {
+      throw AuthRepositoryException(e.code, e.message, e.stackTrace);
     }
   }
 }

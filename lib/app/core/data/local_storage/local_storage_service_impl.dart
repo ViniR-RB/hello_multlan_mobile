@@ -39,4 +39,15 @@ class LocalStorageServiceImpl implements ILocalStorageService {
       throw LocalStorageException("unkownError", e.toString(), s);
     }
   }
+
+  @override
+  AsyncResult<AppException, Unit> remove(String key) async {
+    try {
+      await _storage.delete(key: key);
+      return Success(unit);
+    } catch (e, s) {
+      log("Error on remove local storage", error: e, stackTrace: s);
+      throw LocalStorageException("unkownError", e.toString(), s);
+    }
+  }
 }

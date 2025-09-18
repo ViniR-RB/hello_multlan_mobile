@@ -10,6 +10,8 @@ class LoaderMessageNotifier extends ChangeNotifier {
   bool _isLoading = false;
   String? _message;
   SnackType? _type;
+  // ignore: prefer_final_fields
+  bool _isDisposed = false;
 
   bool get isLoading => _isLoading;
   String? get message => _message;
@@ -17,23 +19,27 @@ class LoaderMessageNotifier extends ChangeNotifier {
 
   void showLoader() {
     _isLoading = true;
-    notifyListeners();
+    _safeNotify();
   }
 
   void hideLoader() {
     _isLoading = false;
-    notifyListeners();
+    _safeNotify();
   }
 
   void showMessage(String message, SnackType type) {
     _message = message;
     _type = type;
-    notifyListeners();
+    _safeNotify();
 
     Future.microtask(() {
       _message = null;
       _type = null;
     });
+  }
+
+  void _safeNotify() {
+    if (!_isDisposed) notifyListeners();
   }
 }
 

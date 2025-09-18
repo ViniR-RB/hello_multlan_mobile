@@ -10,4 +10,6 @@ abstract interface class AuthRepository {
   AsyncResult<AppException, UserModel> whoIAm();
 
   AsyncResult<AppException, Unit> login(Credentials credentials);
+
+  AsyncResult<AppException, Unit> logout();
 }

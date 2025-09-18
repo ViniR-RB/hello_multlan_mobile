@@ -1,6 +1,7 @@
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:hello_multlan/app/core/core_module.dart';
 import 'package:hello_multlan/app/core/data/rest_client/rest_client.dart';
+import 'package:hello_multlan/app/modules/auth/auth_module.dart';
 import 'package:hello_multlan/app/modules/box/gateway/box_gateway.dart';
 import 'package:hello_multlan/app/modules/box/repositories/box_repository.dart';
 import 'package:hello_multlan/app/modules/box/repositories/box_repository_impl.dart';
@@ -9,6 +10,8 @@ import 'package:hello_multlan/app/modules/box/ui/box_form/box_form_page.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_form/commands/create_box_data_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_form/commands/get_image_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_form/commands/get_user_location_send_form_command.dart';
+import 'package:hello_multlan/app/modules/box/ui/box_form/commands/logout_command.dart';
+import 'package:hello_multlan/app/modules/box/ui/box_hub/box_hub_controller.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_hub/box_hub_page.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/box_map_controller.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/box_map_page.dart';
@@ -21,6 +24,7 @@ class BoxModule extends Module {
   @override
   List<Module> get imports => [
     CoreModule(),
+    AuthModule(),
     GeoLocatorModule(),
   ];
 
@@ -35,6 +39,7 @@ class BoxModule extends Module {
     i.add(GetUserLocationSendFormCommand.new);
     i.add(CreateBoxDataCommand.new);
     i.add(GetBoxByIdCommand.new);
+    i.add(LogoutCommand.new);
   }
 
   @override
@@ -42,7 +47,15 @@ class BoxModule extends Module {
 
   @override
   void routes(RouteManager r) {
-    r.child("/", child: (_) => BoxHubPage());
+    r.child(
+      "/",
+      child: (_) {
+        final logoutCommand = Modular.get<LogoutCommand>();
+        final controller = BoxHubController(logoutCommand: logoutCommand);
+
+        return BoxHubPage(controller: controller, logoutCommand: logoutCommand);
+      },
+    );
     r.child(
       "/form",
       child: (_) {
