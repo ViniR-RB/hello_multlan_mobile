@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:hello_multlan/app/core/config/constants.dart';
 import 'package:hello_multlan/app/core/data/local_storage/i_local_storage.service.dart';
 import 'package:hello_multlan/app/core/either/either.dart';
+import 'package:hello_multlan/app/core/either/unit.dart';
 import 'package:hello_multlan/app/core/exceptions/app_exception.dart';
 import 'package:hello_multlan/app/core/extensions/async_result_extension.dart';
 import 'package:hello_multlan/app/modules/auth/models/user_model.dart';
@@ -38,12 +39,44 @@ class OccurrenceRepositoryImpl implements OccurrenceRepository {
         take,
         page,
         userId,
+        "DESC",
       );
 
       return Success(pageOccurrenceLit);
     } catch (e, s) {
       log("Error in get all occurrences", error: e, stackTrace: s);
       throw OccurrenceRepositoryException("unknownError", e.toString(), s);
+    }
+  }
+
+  @override
+  AsyncResult<AppException, Unit> cancelOccurrence({
+    required String occurenceId,
+    required String cancelReason,
+  }) async {
+    try {
+      await _gateway.cancelOccurrence(occurenceId, cancelReason);
+      return Success(unit);
+    } catch (e, s) {
+      log("Error in cancel occurrence", error: e, stackTrace: s);
+      return Failure(
+        OccurrenceRepositoryException("unknownError", e.toString()),
+      );
+    }
+  }
+
+  @override
+  AsyncResult<AppException, Unit> resolveOccurrence({
+    required String occurrenceId,
+  }) async {
+    try {
+      await _gateway.resolveOccurrence(occurrenceId);
+      return Success(unit);
+    } catch (e, s) {
+      log("Error in resolve occurrence", error: e, stackTrace: s);
+      return Failure(
+        OccurrenceRepositoryException("unknownError", e.toString()),
+      );
     }
   }
 }

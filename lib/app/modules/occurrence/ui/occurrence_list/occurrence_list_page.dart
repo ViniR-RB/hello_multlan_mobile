@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:hello_multlan/app/core/extensions/error_translator.dart';
 import 'package:hello_multlan/app/core/extensions/loader_message.dart';
 import 'package:hello_multlan/app/core/states/command_state.dart';
 import 'package:hello_multlan/app/core/widgets/custom_app_bar_sliver.dart';
 import 'package:hello_multlan/app/core/widgets/custom_scaffold_foreground.dart';
 import 'package:hello_multlan/app/modules/occurrence/repositories/models/occurence_model.dart';
+import 'package:hello_multlan/app/modules/occurrence/ui/occurrence_list/command/cancel_occurrence_command.dart';
 import 'package:hello_multlan/app/modules/occurrence/ui/occurrence_list/command/get_all_occurrence_command.dart';
+import 'package:hello_multlan/app/modules/occurrence/ui/occurrence_list/command/resolve_occurrence_command.dart';
 import 'package:hello_multlan/app/modules/occurrence/ui/occurrence_list/occurrence_list_controller.dart';
 import 'package:hello_multlan/app/modules/occurrence/ui/occurrence_list/widgets/occurrence_detail_bottom_sheet.dart';
 import 'package:hello_multlan/app/modules/occurrence/ui/occurrence_list/widgets/occurrence_list_item.dart';
@@ -12,10 +16,14 @@ import 'package:hello_multlan/app/modules/occurrence/ui/occurrence_list/widgets/
 class OccurrenceListPage extends StatefulWidget {
   final OccurrenceListController controller;
   final GetAllOccurrenceCommand getAllOccurrenceCommand;
+  final CancelOccurrenceCommand cancelOccurrenceCommand;
+  final ResolveOccurrenceCommand resolveOccurrenceCommand;
   const OccurrenceListPage({
     super.key,
     required this.controller,
     required this.getAllOccurrenceCommand,
+    required this.cancelOccurrenceCommand,
+    required this.resolveOccurrenceCommand,
   });
 
   @override
@@ -23,7 +31,7 @@ class OccurrenceListPage extends StatefulWidget {
 }
 
 class _OccurrenceListPageState extends State<OccurrenceListPage>
-    with LoaderMessageMixin {
+    with LoaderMessageMixin, ErrorTranslator {
   bool _isDisposed = false;
   final ScrollController _scrollController = ScrollController();
 
@@ -34,8 +42,73 @@ class _OccurrenceListPageState extends State<OccurrenceListPage>
       if (mounted && !_isDisposed) {
         widget.getAllOccurrenceCommand.execute();
         _setupScrollListener();
+        _setupCommandListeners();
       }
     });
+  }
+
+  void _setupCommandListeners() {
+    widget.cancelOccurrenceCommand.addListener(_onCancelOccurrenceStateChange);
+    widget.resolveOccurrenceCommand.addListener(
+      _onResolveOccurrenceStateChange,
+    );
+  }
+
+  void _onCancelOccurrenceStateChange() {
+    if (!mounted || _isDisposed) return;
+
+    final state = widget.cancelOccurrenceCommand.state;
+    switch (state) {
+      case CommandLoading():
+        notifier.showLoader();
+        break;
+      case CommandSuccess():
+        notifier.hideLoader();
+        notifier.showMessage(
+          "Ocorrência cancelada com sucesso!",
+          SnackType.success,
+        );
+        widget.getAllOccurrenceCommand.execute(refresh: true);
+        break;
+      case CommandFailure(exception: final error):
+        notifier.hideLoader();
+        notifier.showMessage(
+          translateError(context, error.code),
+          SnackType.error,
+        );
+        break;
+      default:
+        break;
+    }
+  }
+
+  void _onResolveOccurrenceStateChange() {
+    if (!mounted || _isDisposed) return;
+
+    final state = widget.resolveOccurrenceCommand.state;
+    switch (state) {
+      case CommandLoading():
+        notifier.showLoader();
+        break;
+      case CommandSuccess():
+        notifier.hideLoader();
+        notifier.showMessage(
+          "Ocorrência resolvida com sucesso!",
+          SnackType.success,
+        );
+        // Recarregar a lista após resolver
+        widget.getAllOccurrenceCommand.execute(refresh: true);
+        break;
+      case CommandFailure(exception: final error):
+        notifier.hideLoader();
+        notifier.showMessage(
+          translateError(context, error.code),
+          SnackType.error,
+        );
+        break;
+      default:
+        break;
+    }
   }
 
   void _setupScrollListener() {
@@ -58,10 +131,8 @@ class _OccurrenceListPageState extends State<OccurrenceListPage>
   void _onOccurrenceAction(OccurrenceModel occurrence, String action) {
     if (!mounted || _isDisposed) return;
 
-    // Aqui você vai implementar os commands para resolver/cancelar
     switch (action) {
       case 'resolve':
-        // widget.controller.resolveOccurrence(occurrence.id);
         _showActionDialog(
           occurrence,
           'Resolver',
@@ -69,7 +140,6 @@ class _OccurrenceListPageState extends State<OccurrenceListPage>
         );
         break;
       case 'cancel':
-        // widget.controller.cancelOccurrence(occurrence.id);
         _showCancelDialog(occurrence);
         break;
       case 'details':
@@ -96,7 +166,8 @@ class _OccurrenceListPageState extends State<OccurrenceListPage>
           FilledButton(
             onPressed: () {
               Navigator.pop(context);
-              // Executar ação
+              // Executar ação de resolver
+              widget.controller.resolveOccurrence(occurrenceId: occurrence.id);
             },
             child: const Text('Confirmar'),
           ),
@@ -117,12 +188,18 @@ class _OccurrenceListPageState extends State<OccurrenceListPage>
           children: [
             const Text('Informe o motivo do cancelamento:'),
             const SizedBox(height: 16),
-            TextField(
+            TextFormField(
               controller: reasonController,
               decoration: const InputDecoration(
                 labelText: 'Motivo do cancelamento',
                 hintText: 'Digite o motivo...',
               ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty || value.length < 3) {
+                  return 'O motivo do cancelamento é obrigatório.';
+                }
+                return null;
+              },
               maxLines: 3,
             ),
           ],
@@ -132,14 +209,23 @@ class _OccurrenceListPageState extends State<OccurrenceListPage>
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancelar'),
           ),
-          FilledButton(
-            onPressed: () {
-              if (reasonController.text.trim().isNotEmpty) {
-                Navigator.pop(context);
-                // widget.controller.cancelOccurrence(occurrence.id, reasonController.text);
-              }
+          ValueListenableBuilder(
+            valueListenable: reasonController,
+            builder: (context, value, child) {
+              return FilledButton(
+                onPressed:
+                    value.text.trim().isEmpty || value.text.trim().length < 3
+                    ? null
+                    : () {
+                        Modular.to.pop();
+                        widget.controller.cancelOccurrence(
+                          occurrenceId: occurrence.id,
+                          cancelReason: reasonController.text.trim(),
+                        );
+                      },
+                child: const Text('Confirmar'),
+              );
             },
-            child: const Text('Confirmar'),
           ),
         ],
       ),
@@ -150,6 +236,12 @@ class _OccurrenceListPageState extends State<OccurrenceListPage>
   void dispose() {
     _isDisposed = true;
     _scrollController.dispose();
+    widget.cancelOccurrenceCommand.removeListener(
+      _onCancelOccurrenceStateChange,
+    );
+    widget.resolveOccurrenceCommand.removeListener(
+      _onResolveOccurrenceStateChange,
+    );
     super.dispose();
   }
 

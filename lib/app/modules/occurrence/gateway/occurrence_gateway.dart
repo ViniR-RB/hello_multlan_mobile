@@ -21,5 +21,20 @@ abstract class OccurrenceGateway {
     @Query("take") int take,
     @Query("page") int page,
     @Query("userId") int userId,
+    @Query("order") String order,
+  );
+  @PUT("/api/occurrences/{occurrenceId}/resolved")
+  @Headers(<String, dynamic>{
+    'DIO_AUTH_KEY': true,
+  })
+  Future<void> resolveOccurrence(@Path("occurrenceId") String occurrenceId);
+
+  @PUT("/api/occurrences/{occurenceId}/cancel")
+  @Headers(<String, dynamic>{
+    'DIO_AUTH_KEY': true,
+  })
+  Future<void> cancelOccurrence(
+    @Path("occurenceId") String occurenceId,
+    @Field() String cancelReason,
   );
 }
