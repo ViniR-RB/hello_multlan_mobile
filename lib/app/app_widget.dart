@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:hello_multlan/app/core/data/navigation/navigation_service_impl.dart';
 import 'package:hello_multlan/app/core/data/push_notification/push_notification.dart';
 import 'package:hello_multlan/app/core/delegates/lucid_delegate.dart';
 import 'package:hello_multlan/app/core/error/global_error_handler.dart';
@@ -19,7 +20,11 @@ class _AppWidgetState extends State<AppWidget> {
   void initState() {
     GlobalErrorHandler.initialize();
     Modular.get<PushNotification>().initialize();
+
+    // Configurar os navigation keys
     Modular.setNavigatorKey(GlobalErrorHandler.navigatorKey);
+    Modular.setNavigatorKey(NavigationServiceImpl.navigatorKey);
+
     super.initState();
   }
 

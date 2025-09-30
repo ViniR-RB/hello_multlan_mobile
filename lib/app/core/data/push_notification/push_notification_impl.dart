@@ -4,31 +4,24 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:hello_multlan/app/core/config/constants.dart';
 import 'package:hello_multlan/app/core/data/local_notifications/local_notification.dart';
 import 'package:hello_multlan/app/core/data/local_storage/i_local_storage.service.dart';
+import 'package:hello_multlan/app/core/data/navigation/navigation_service.dart';
 import 'package:hello_multlan/app/core/data/push_notification/push_notification.dart';
-
-// Função top-level para background handler
-@pragma('vm:entry-point')
-Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  log("Push Notification recebida em background: ", error: message.data);
-  // Exemplo: mostrar notificação local (se necessário)
-  // LocalNotificationImpl.showLocalNotificationStatic(
-  //   message.notification?.title ?? "",
-  //   message.notification?.body ?? "",
-  // );
-}
 
 class PushNotificationImpl implements PushNotification {
   final FirebaseMessaging _messaging;
   final LocalNotification _localNotifications;
   final ILocalStorageService _localStorageService;
+  final NavigationService _navigationService;
 
   PushNotificationImpl({
     required FirebaseMessaging messaging,
     required LocalNotification localNotifications,
     required ILocalStorageService localStorageService,
+    required NavigationService navigationService,
   }) : _localNotifications = localNotifications,
        _localStorageService = localStorageService,
-       _messaging = messaging;
+       _messaging = messaging,
+       _navigationService = navigationService;
 
   @override
   Future<void> initialize() async {
@@ -38,6 +31,16 @@ class PushNotificationImpl implements PushNotification {
 
     FirebaseMessaging.onMessage.listen(onMessage);
     FirebaseMessaging.onMessageOpenedApp.listen(onMessageOpenedApp);
+
+    // Verificar se o app foi aberto através de uma notificação
+    final initialMessage = await _messaging.getInitialMessage();
+    if (initialMessage != null) {
+      log(
+        "App aberto através de notificação inicial: ${initialMessage.notification}",
+      );
+      // Navegar para /occurrence após verificar login
+      _navigationService.navigateToOccurrenceIfLoggedIn();
+    }
   }
 
   @override
@@ -60,9 +63,8 @@ class PushNotificationImpl implements PushNotification {
     if (notification == null) {
       return;
     }
-    _localNotifications.showLocalNotification(
-      notification.title ?? "",
-      notification.body ?? "",
-    );
+
+    // Verificar se o usuário está logado e navegar para /occurrence
+    _navigationService.navigateToOccurrenceIfLoggedIn();
   }
 }
