@@ -390,14 +390,37 @@ class _OccurrenceListPageState extends State<OccurrenceListPage>
                 width: 16,
                 height: 16,
                 decoration: const BoxDecoration(
+                  color: Colors.grey,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              title: const Text('Todas'),
+              trailing: widget.getAllOccurrenceCommand.currentStatus == null
+                  ? const Icon(Icons.check, color: Colors.green)
+                  : null,
+              onTap: () {
+                Navigator.pop(context);
+                widget.controller.filterByStatus(null);
+              },
+            ),
+            ListTile(
+              leading: Container(
+                width: 16,
+                height: 16,
+                decoration: const BoxDecoration(
                   color: Colors.blue,
                   shape: BoxShape.circle,
                 ),
               ),
               title: const Text('Criadas'),
+              trailing:
+                  widget.getAllOccurrenceCommand.currentStatus ==
+                      OccurrenceStatus.CREATED
+                  ? const Icon(Icons.check, color: Colors.green)
+                  : null,
               onTap: () {
                 Navigator.pop(context);
-                // Filtrar por criadas
+                widget.controller.filterByStatus(OccurrenceStatus.CREATED);
               },
             ),
             ListTile(
@@ -410,9 +433,14 @@ class _OccurrenceListPageState extends State<OccurrenceListPage>
                 ),
               ),
               title: const Text('Resolvidas'),
+              trailing:
+                  widget.getAllOccurrenceCommand.currentStatus ==
+                      OccurrenceStatus.RESOLVED
+                  ? const Icon(Icons.check, color: Colors.green)
+                  : null,
               onTap: () {
                 Navigator.pop(context);
-                // Filtrar por resolvidas
+                widget.controller.filterByStatus(OccurrenceStatus.RESOLVED);
               },
             ),
             ListTile(
@@ -425,9 +453,14 @@ class _OccurrenceListPageState extends State<OccurrenceListPage>
                 ),
               ),
               title: const Text('Canceladas'),
+              trailing:
+                  widget.getAllOccurrenceCommand.currentStatus ==
+                      OccurrenceStatus.CANCELED
+                  ? const Icon(Icons.check, color: Colors.green)
+                  : null,
               onTap: () {
                 Navigator.pop(context);
-                // Filtrar por canceladas
+                widget.controller.filterByStatus(OccurrenceStatus.CANCELED);
               },
             ),
           ],

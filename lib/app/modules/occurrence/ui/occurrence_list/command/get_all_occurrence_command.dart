@@ -10,6 +10,7 @@ class GetAllOccurrenceCommand
   final OccurrenceRepository _repository;
   int _currentPage = 1;
   bool _isLoadingMore = false;
+  OccurrenceStatus? _currentStatus;
 
   GetAllOccurrenceCommand({required OccurrenceRepository repository})
     : _repository = repository,
@@ -19,15 +20,21 @@ class GetAllOccurrenceCommand
   void reset() {
     _currentPage = 1;
     _isLoadingMore = false;
+    _currentStatus = null;
     setState(CommandInitial(PageModel.empty()));
   }
 
   Future<void> execute({
     int take = 10,
     bool refresh = false,
+    OccurrenceStatus? status,
   }) async {
-    // Se for refresh, reseta a página
-    if (refresh) {
+    // Atualiza o status atual se fornecido
+    if (status != _currentStatus) {
+      _currentStatus = status;
+      _currentPage = 1;
+      setState(CommandLoading());
+    } else if (refresh) {
       _currentPage = 1;
       setState(CommandLoading());
     }
@@ -35,6 +42,7 @@ class GetAllOccurrenceCommand
     final occurrenceListResult = await _repository.getUserOccurrences(
       page: _currentPage,
       take: take,
+      status: _currentStatus,
     );
 
     occurrenceListResult.when(
@@ -76,6 +84,7 @@ class GetAllOccurrenceCommand
     final occurrenceListResult = await _repository.getUserOccurrences(
       page: _currentPage,
       take: take,
+      status: _currentStatus,
     );
 
     occurrenceListResult.when(
@@ -110,4 +119,5 @@ class GetAllOccurrenceCommand
 
   bool get isLoadingMore => _isLoadingMore;
   int get currentPage => _currentPage;
+  OccurrenceStatus? get currentStatus => _currentStatus;
 }

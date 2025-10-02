@@ -1,3 +1,4 @@
+import 'package:hello_multlan/app/modules/occurrence/repositories/models/occurence_model.dart';
 import 'package:hello_multlan/app/modules/occurrence/ui/occurrence_list/command/cancel_occurrence_command.dart';
 import 'package:hello_multlan/app/modules/occurrence/ui/occurrence_list/command/get_all_occurrence_command.dart';
 import 'package:hello_multlan/app/modules/occurrence/ui/occurrence_list/command/resolve_occurrence_command.dart';
@@ -17,7 +18,11 @@ class OccurrenceListController {
 
   Future<void> getAllOccurences({
     int take = 10,
-  }) => _getAllOccurrenceCommand.execute(take: take);
+    OccurrenceStatus? status,
+  }) => _getAllOccurrenceCommand.execute(take: take, status: status);
+
+  Future<void> filterByStatus(OccurrenceStatus? status) =>
+      _getAllOccurrenceCommand.execute(status: status, refresh: true);
 
   Future<void> cancelOccurrence({
     required String occurrenceId,

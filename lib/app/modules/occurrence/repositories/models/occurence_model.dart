@@ -4,11 +4,14 @@ part 'occurence_model.g.dart';
 
 enum OccurrenceStatus {
   @JsonValue('CREATED')
-  created('CREATED'),
+  // ignore: constant_identifier_names
+  CREATED('CREATED'),
   @JsonValue('RESOLVED')
-  resolved('RESOLVED'),
+  // ignore: constant_identifier_names
+  RESOLVED('RESOLVED'),
   @JsonValue('CANCELED')
-  cancelled('CANCELED');
+  // ignore: constant_identifier_names
+  CANCELED('CANCELED');
 
   const OccurrenceStatus(this.value);
   final String value;

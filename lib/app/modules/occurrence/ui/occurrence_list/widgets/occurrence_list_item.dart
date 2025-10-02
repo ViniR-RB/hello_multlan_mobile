@@ -93,7 +93,7 @@ class OccurrenceListItem extends StatelessWidget {
                     ],
                   ),
                   // Segunda linha: botões de ação (se existirem)
-                  if (occurrence.status == OccurrenceStatus.created) ...[
+                  if (occurrence.status == OccurrenceStatus.CREATED) ...[
                     const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -116,7 +116,7 @@ class OccurrenceListItem extends StatelessWidget {
                   ],
                 ],
               ),
-              if (occurrence.status == OccurrenceStatus.cancelled &&
+              if (occurrence.status == OccurrenceStatus.CANCELED &&
                   occurrence.canceledReason != null) ...[
                 const SizedBox(height: 12),
                 Container(
@@ -163,13 +163,13 @@ class _StatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (color, icon, label) = switch (status) {
-      OccurrenceStatus.created => (Colors.blue, Icons.schedule, 'Criada'),
-      OccurrenceStatus.resolved => (
+      OccurrenceStatus.CREATED => (Colors.blue, Icons.schedule, 'Criada'),
+      OccurrenceStatus.RESOLVED => (
         Colors.green,
         Icons.check_circle,
         'Resolvida',
       ),
-      OccurrenceStatus.cancelled => (Colors.red, Icons.cancel, 'Cancelada'),
+      OccurrenceStatus.CANCELED => (Colors.red, Icons.cancel, 'Cancelada'),
     };
 
     return Container(

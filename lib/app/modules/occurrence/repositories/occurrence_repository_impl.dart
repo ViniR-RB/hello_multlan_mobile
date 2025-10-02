@@ -27,6 +27,7 @@ class OccurrenceRepositoryImpl implements OccurrenceRepository {
   AsyncResult<AppException, PageModel<OccurrenceModel>> getUserOccurrences({
     int page = 1,
     int take = 10,
+    OccurrenceStatus? status,
   }) async {
     try {
       final userModelResult = await _localStorageService.get(Constants.userKey);
@@ -40,6 +41,7 @@ class OccurrenceRepositoryImpl implements OccurrenceRepository {
         page,
         userId,
         "DESC",
+        status?.name,
       );
 
       return Success(pageOccurrenceLit);

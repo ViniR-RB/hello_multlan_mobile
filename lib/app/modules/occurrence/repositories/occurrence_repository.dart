@@ -8,6 +8,7 @@ abstract interface class OccurrenceRepository {
   AsyncResult<AppException, PageModel<OccurrenceModel>> getUserOccurrences({
     int page = 1,
     int take = 10,
+    OccurrenceStatus? status,
   });
   AsyncResult<AppException, Unit> cancelOccurrence({
     required String occurenceId,

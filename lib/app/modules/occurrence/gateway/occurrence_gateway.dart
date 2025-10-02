@@ -22,6 +22,7 @@ abstract class OccurrenceGateway {
     @Query("page") int page,
     @Query("userId") int userId,
     @Query("order") String order,
+    @Query("status") String? status,
   );
   @PUT("/api/occurrences/{occurrenceId}/resolved")
   @Headers(<String, dynamic>{

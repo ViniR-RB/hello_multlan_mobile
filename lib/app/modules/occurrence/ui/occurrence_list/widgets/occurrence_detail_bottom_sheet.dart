@@ -234,7 +234,7 @@ class OccurrenceDetailBottomSheet extends StatelessWidget {
                   ],
 
                   // Motivo do cancelamento (se existir)
-                  if (occurrence.status == OccurrenceStatus.cancelled &&
+                  if (occurrence.status == OccurrenceStatus.CANCELED &&
                       occurrence.canceledReason != null) ...[
                     const SizedBox(height: 24),
                     _buildSection(
@@ -278,7 +278,7 @@ class OccurrenceDetailBottomSheet extends StatelessWidget {
           ),
 
           // Botões de ação (apenas para ocorrências criadas)
-          if (occurrence.status == OccurrenceStatus.created)
+          if (occurrence.status == OccurrenceStatus.CREATED)
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -391,25 +391,25 @@ class OccurrenceDetailBottomSheet extends StatelessWidget {
 
   Color _getStatusColor() {
     return switch (occurrence.status) {
-      OccurrenceStatus.created => Colors.blue,
-      OccurrenceStatus.resolved => Colors.green,
-      OccurrenceStatus.cancelled => Colors.red,
+      OccurrenceStatus.CREATED => Colors.blue,
+      OccurrenceStatus.RESOLVED => Colors.green,
+      OccurrenceStatus.CANCELED => Colors.red,
     };
   }
 
   IconData _getStatusIcon() {
     return switch (occurrence.status) {
-      OccurrenceStatus.created => Icons.schedule,
-      OccurrenceStatus.resolved => Icons.check_circle,
-      OccurrenceStatus.cancelled => Icons.cancel,
+      OccurrenceStatus.CREATED => Icons.schedule,
+      OccurrenceStatus.RESOLVED => Icons.check_circle,
+      OccurrenceStatus.CANCELED => Icons.cancel,
     };
   }
 
   String _getStatusText() {
     return switch (occurrence.status) {
-      OccurrenceStatus.created => 'Em Andamento',
-      OccurrenceStatus.resolved => 'Resolvida',
-      OccurrenceStatus.cancelled => 'Cancelada',
+      OccurrenceStatus.CREATED => 'Em Andamento',
+      OccurrenceStatus.RESOLVED => 'Resolvida',
+      OccurrenceStatus.CANCELED => 'Cancelada',
     };
   }
 
