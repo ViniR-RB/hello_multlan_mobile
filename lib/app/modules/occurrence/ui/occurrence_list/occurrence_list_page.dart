@@ -463,6 +463,10 @@ class _OccurrenceListPageState extends State<OccurrenceListPage>
                 widget.controller.filterByStatus(OccurrenceStatus.CANCELED);
               },
             ),
+
+            SizedBox(
+              height: MediaQuery.of(context).padding.bottom,
+            ),
           ],
         ),
       ),
