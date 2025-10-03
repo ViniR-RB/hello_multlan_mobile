@@ -42,7 +42,17 @@ class _BoxMapPageState extends State<BoxMapPage>
     super.initState();
   }
 
-  _listerUserPosition() {}
+  _listerUserPosition() {
+    switch (widget.watchUserPositionCommand.state) {
+      case CommandFailure(exception: final exception):
+        notifier.showMessage(
+          translateError(context, exception.code),
+          SnackType.error,
+        );
+      case CommandLoading() || CommandInitial() || CommandSuccess():
+        break;
+    }
+  }
 
   _getAllBoxesListener() {
     if (widget.getAllBoxesCommand.state is CommandLoading) {

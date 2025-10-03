@@ -18,20 +18,20 @@ class GeoLocatorServiceImpl implements GeoLocatorService {
 
       serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        return Failure(GeoLocatorException('location_service_disabled'));
+        return Failure(GeoLocatorException('locationServiceDisabled'));
       }
       permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
           return Failure(
-            GeoLocatorException('location_permission_denied'),
+            GeoLocatorException('locationPermissionDenied'),
           );
         }
       }
       if (permission == LocationPermission.deniedForever) {
         return Failure(
-          GeoLocatorException('location_permission_denied_forever'),
+          GeoLocatorException('locationPermissionDeniedForever'),
         );
       }
       Position position = await Geolocator.getCurrentPosition();
@@ -64,7 +64,7 @@ class GeoLocatorServiceImpl implements GeoLocatorService {
 
       serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        yield Failure(GeoLocatorException('location_service_disabled'));
+        yield Failure(GeoLocatorException('locationServiceDisabled'));
         return;
       }
 
@@ -72,13 +72,13 @@ class GeoLocatorServiceImpl implements GeoLocatorService {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          yield Failure(GeoLocatorException('location_permission_denied'));
+          yield Failure(GeoLocatorException('locationPermissionDenied'));
           return;
         }
       }
       if (permission == LocationPermission.deniedForever) {
         yield Failure(
-          GeoLocatorException('location_permission_denied_forever'),
+          GeoLocatorException('locationPermissionDeniedForever'),
         );
         return;
       }
