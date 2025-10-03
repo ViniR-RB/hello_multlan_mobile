@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hello_multlan/app/core/extensions/theme_extension.dart';
 import 'package:hello_multlan/app/core/extensions/timeago.dart';
-import 'package:hello_multlan/app/gen/assets.gen.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/widgets/box_detail_button_sheet.dart';
 import 'package:hello_multlan/app/modules/occurrence/repositories/models/occurence_model.dart';
+import 'package:hello_multlan/gen/assets.gen.dart';
 
 class OccurrenceDetailBottomSheet extends StatelessWidget {
   final OccurrenceModel occurrence;

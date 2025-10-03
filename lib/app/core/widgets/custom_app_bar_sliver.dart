@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:hello_multlan/app/core/extensions/theme_extension.dart';
 import 'package:hello_multlan/app/core/theme/app_colors.dart';
-import 'package:hello_multlan/app/gen/assets.gen.dart';
+import 'package:hello_multlan/gen/assets.gen.dart';
 
 class CustomSliverAppBar extends StatelessWidget {
   final String title;

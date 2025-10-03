@@ -8,7 +8,7 @@ targets:
     builders:
       flutter_gen_runner:
         options:
-          output: lib/app/gen/
+          output: lib/gen/
       json_serializable:
         options:
           field_rename: none 
