@@ -280,7 +280,12 @@ class OccurrenceDetailBottomSheet extends StatelessWidget {
           // Botões de ação (apenas para ocorrências criadas)
           if (occurrence.status == OccurrenceStatus.CREATED)
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.only(
+                top: 20,
+                left: 20,
+                right: 20,
+                bottom: MediaQuery.of(context).padding.bottom + 20,
+              ),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [

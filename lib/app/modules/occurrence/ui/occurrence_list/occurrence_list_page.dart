@@ -360,14 +360,6 @@ class _OccurrenceListPageState extends State<OccurrenceListPage>
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // Navegar para criar nova ocorrência
-          // Modular.to.pushNamed('/occurrence/form');
-        },
-        icon: const Icon(Icons.add),
-        label: const Text('Nova Ocorrência'),
-      ),
     );
   }
 
@@ -498,7 +490,7 @@ class _EmptyState extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          'Toque no botão "+" para criar uma nova ocorrência',
+          'Nenhuma Ocorrência foi criada para você ainda.',
           style: TextStyle(
             color: Colors.grey[500],
           ),
