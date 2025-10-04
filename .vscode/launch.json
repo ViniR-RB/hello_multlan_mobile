@@ -7,7 +7,10 @@
         {
             "name": "hello_multlan",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args": [
+                "--no-enable-impeller"
+            ]
         },
         {
             "name": "hello_multlan (profile mode)",

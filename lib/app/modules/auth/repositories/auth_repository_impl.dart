@@ -108,11 +108,19 @@ class AuthRepositoryImpl implements AuthRepository {
       return switch (e) {
         DioException(
           response: Response(
-            statusCode: 401,
-            data: {
-              "statusCode": 401,
-              "message": "E-mail or Password is not match",
-            },
+            statusCode: 400,
+          ),
+        ) =>
+          Failure(
+            AuthRepositoryException(
+              "invalidCredentials",
+              e.toString(),
+              e.stackTrace,
+            ),
+          ),
+        DioException(
+          response: Response(
+            statusCode: 404,
           ),
         ) =>
           Failure(
