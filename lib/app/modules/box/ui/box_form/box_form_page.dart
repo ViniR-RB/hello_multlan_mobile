@@ -10,9 +10,11 @@ import 'package:hello_multlan/app/core/states/command_state.dart';
 import 'package:hello_multlan/app/core/widgets/custom_app_bar_sliver.dart';
 import 'package:hello_multlan/app/core/widgets/custom_scaffold_foreground.dart';
 import 'package:hello_multlan/app/modules/box/dto/create_box_dto.dart';
+import 'package:hello_multlan/app/modules/box/repositories/models/box_zone_enum.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_form/box_form_controller.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_form/commands/create_box_data_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_form/commands/get_image_command.dart';
+import 'package:hello_multlan/app/modules/box/ui/box_form/commands/get_user_location_by_address_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_form/commands/get_user_location_send_form_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_form/widgets/image_source_bottom_sheet.dart';
 
@@ -20,12 +22,14 @@ class BoxFormPage extends StatefulWidget {
   final BoxFormController controller;
   final GetImageCommand getImageCommand;
   final GetUserLocationSendFormCommand getUserLocationSendFormCommand;
+  final GetUserLocationByAddressCommand getUserLocationByAddressCommand;
   final CreateBoxDataCommand createBoxDataCommand;
   const BoxFormPage({
     super.key,
     required this.controller,
     required this.getImageCommand,
     required this.getUserLocationSendFormCommand,
+    required this.getUserLocationByAddressCommand,
     required this.createBoxDataCommand,
   });
 
@@ -39,11 +43,6 @@ class _BoxFormPageState extends State<BoxFormPage>
   final _validator = CreateBoxDtoValidator();
   final _formKey = GlobalKey<FormState>();
 
-  List<Widget> icons = <Widget>[
-    const Icon(Icons.location_on),
-    const Icon(Icons.location_off),
-  ];
-
   _addUser() {
     _boxDto.addUserForListByIndex("", _boxDto.listUser.length);
   }
@@ -53,6 +52,9 @@ class _BoxFormPageState extends State<BoxFormPage>
     super.initState();
     widget.getImageCommand.addListener(_listernetGetImage);
     widget.getUserLocationSendFormCommand.addListener(_listenerGetUserLocation);
+    widget.getUserLocationByAddressCommand.addListener(
+      _listenerGetUserLocationByAddress,
+    );
     widget.createBoxDataCommand.addListener(_listernetCreateBox);
   }
 
@@ -183,6 +185,36 @@ class _BoxFormPageState extends State<BoxFormPage>
     }
   }
 
+  void _listenerGetUserLocationByAddress() {
+    final state = widget.getUserLocationByAddressCommand.state;
+
+    switch (state) {
+      case CommandSuccess(value: final latLng):
+        notifier.hideLoader();
+
+        _boxDto.setLatitude = latLng!.latitude.toString();
+        _boxDto.setLongitude = latLng.longitude.toString();
+        final isValid = _validator.validate(_boxDto);
+
+        if (isValid.isValid) {
+          widget.controller.createBox(_boxDto);
+        }
+
+      case CommandFailure(:final exception):
+        notifier.hideLoader();
+
+        final message = translateError(
+          context,
+          exception.code,
+        );
+        notifier.showMessage(message, SnackType.error);
+      case CommandLoading():
+        notifier.showLoader();
+      case _:
+        null;
+    }
+  }
+
   void _listernetCreateBox() {
     final state = widget.createBoxDataCommand.state;
 
@@ -218,6 +250,9 @@ class _BoxFormPageState extends State<BoxFormPage>
     widget.getUserLocationSendFormCommand.removeListener(
       _listenerGetUserLocation,
     );
+    widget.getUserLocationByAddressCommand.removeListener(
+      _listenerGetUserLocationByAddress,
+    );
     widget.createBoxDataCommand.removeListener(_listernetCreateBox);
     widget.controller.dispose();
     super.dispose();
@@ -226,6 +261,7 @@ class _BoxFormPageState extends State<BoxFormPage>
   bool _parcialFormIsValid() {
     final formException = _validator.validate(_boxDto);
     final invalidFields = Set.from(formException.exceptions.map((e) => e.key));
+
     log("$invalidFields");
     if (invalidFields.length == 2 &&
         invalidFields.containsAll(["latitude", "longitude"])) {
@@ -445,65 +481,171 @@ class _BoxFormPageState extends State<BoxFormPage>
                           },
                           onChanged: (value) => _boxDto.setNote = value,
                         ),
-                        TextFormField(
-                          decoration: const InputDecoration(labelText: 'Zona'),
-                          validator: _validator.byField(_boxDto, "zone"),
-                          onChanged: (value) => _boxDto.setZone = value,
+
+                        DropdownButtonFormField<BoxZoneEnum>(
+                          decoration: const InputDecoration(
+                            labelText: 'Zona da Caixa',
+                            border: OutlineInputBorder(),
+                          ),
+                          value: BoxZoneEnum.values.firstWhere(
+                            (zone) => zone.value == _boxDto.zone,
+                            orElse: () => BoxZoneEnum.safe,
+                          ), // variável do tipo BoxZoneEnum?
+                          items: BoxZoneEnum.values.map((zone) {
+                            return DropdownMenuItem<BoxZoneEnum>(
+                              value: zone,
+                              child: Text(switch (zone) {
+                                BoxZoneEnum.safe => "Segura",
+                                BoxZoneEnum.moderate => "Moderada",
+                                BoxZoneEnum.danger => "Perigosa",
+                              }),
+                            );
+                          }).toList(),
+                          onChanged: (zone) {
+                            _boxDto.setZone = zone?.value ?? "SAFE";
+                          },
                         ),
-                        ValueListenableBuilder(
-                          valueListenable: widget.controller.selectedGps,
-                          builder: (context, value, child) {
-                            return Wrap(
-                              alignment: WrapAlignment.center,
-                              crossAxisAlignment: WrapCrossAlignment.center,
+
+                        ListenableBuilder(
+                          listenable: _boxDto,
+                          builder: (context, child) {
+                            final isEnderecoSelected =
+                                _boxDto.gpsMode == "ADDRESS";
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                Text(
+                                  "Selecione o método de localização:",
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.labelMedium,
+                                ),
+                                const SizedBox(height: 8),
                                 SizedBox(
-                                  width: MediaQuery.sizeOf(context).width * .6,
-                                  child: TextFormField(
-                                    enabled:
-                                        widget
-                                            .controller
-                                            .selectedGps
-                                            .value[1] ==
-                                        true,
-                                    validator:
-                                        widget
-                                                .controller
-                                                .selectedGps
-                                                .value[1] ==
-                                            true
-                                        ? (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return 'Campo obrigatório';
-                                            }
-                                          }
-                                        : null,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Insira um endereço com cep',
+                                  width: double.infinity,
+                                  child: ToggleButtons(
+                                    direction: Axis.horizontal,
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(8),
                                     ),
+                                    selectedBorderColor: Colors.blue[700],
+                                    isSelected: [
+                                      _boxDto.gpsMode == "PHONE",
+                                      _boxDto.gpsMode == "ADDRESS",
+                                    ],
+                                    constraints: BoxConstraints(
+                                      minWidth:
+                                          (MediaQuery.of(context).size.width -
+                                              80) /
+                                          2,
+                                      maxWidth:
+                                          (MediaQuery.of(context).size.width -
+                                              80) /
+                                          2,
+                                      minHeight: 48,
+                                    ),
+                                    onPressed: (int index) {
+                                      if (index == 0) {
+                                        _boxDto.setGpsMode = "PHONE";
+                                      } else {
+                                        _boxDto.setGpsMode = "ADDRESS";
+                                      }
+                                    },
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4,
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(
+                                              Icons.location_on,
+                                              size: 18,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Expanded(
+                                              child: Text(
+                                                "GPS do celular",
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4,
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(Icons.home, size: 18),
+                                            const SizedBox(width: 4),
+                                            Expanded(
+                                              child: Text(
+                                                "Endereço manual",
+                                                overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                ToggleButtons(
-                                  direction: Axis.horizontal,
-                                  onPressed: (int index) {
-                                    widget.controller.selectedGps.value =
-                                        List<bool>.generate(
-                                          widget
-                                              .controller
-                                              .selectedGps
-                                              .value
-                                              .length,
-                                          (i) => i == index,
-                                        );
-                                  },
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(8),
-                                  ),
-                                  selectedBorderColor: Colors.blue[700],
-                                  isSelected:
-                                      widget.controller.selectedGps.value,
-                                  children: icons,
+                                const SizedBox(height: 16),
+                                AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 300),
+                                  child: isEnderecoSelected
+                                      ? SizedBox(
+                                          key: const ValueKey('endereco'),
+                                          width:
+                                              MediaQuery.sizeOf(context).width *
+                                              .8,
+                                          child: TextFormField(
+                                            decoration: const InputDecoration(
+                                              labelText:
+                                                  'Insira um endereço com CEP',
+                                              border: OutlineInputBorder(),
+                                              prefixIcon: Icon(Icons.home),
+                                            ),
+                                            enabled: true,
+                                            validator: _validator.byField(
+                                              _boxDto,
+                                              'address',
+                                            ),
+                                            onChanged: (value) {
+                                              _boxDto.setAddress = value;
+                                            },
+                                          ),
+                                        )
+                                      : Container(
+                                          key: const ValueKey('gps'),
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 8,
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.location_on,
+                                                color: Colors.blue,
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Expanded(
+                                                child: Text(
+                                                  "A localização será obtida pelo GPS do dispositivo.",
+                                                  style: TextStyle(
+                                                    color: Colors.grey[700],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                 ),
                               ],
                             );
@@ -526,37 +668,45 @@ class _BoxFormPageState extends State<BoxFormPage>
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
                               itemCount: _boxDto.listUser.length,
+
                               itemBuilder: (context, index) {
-                                return TextFormField(
-                                  decoration: InputDecoration(
-                                    labelText: 'Cliente',
-                                    suffixIcon: IconButton(
-                                      icon: Icon(
-                                        Icons.remove_circle,
-                                        color: Colors.red,
-                                      ),
-                                      onPressed: () {
-                                        _boxDto.removeUserForListByIndex(index);
-                                      },
-                                    ),
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 8.0,
                                   ),
-                                  onChanged: (value) {
-                                    _boxDto.addUserForListValue(value, index);
-                                  },
-                                  validator: (String? value) {
-                                    final message = _validator.byField(
-                                      _boxDto,
-                                      "listUser",
-                                    )(value);
-                                    if (message == null) return null;
-                                    if (message == "fieldRequired") {
-                                      return translateError(
-                                        context,
-                                        "fieldRequired",
-                                      );
-                                    }
-                                    return message;
-                                  },
+                                  child: TextFormField(
+                                    decoration: InputDecoration(
+                                      labelText: 'Cliente',
+                                      suffixIcon: IconButton(
+                                        icon: Icon(
+                                          Icons.remove_circle,
+                                          color: Colors.red,
+                                        ),
+                                        onPressed: () {
+                                          _boxDto.removeUserForListByIndex(
+                                            index,
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    onChanged: (value) {
+                                      _boxDto.addUserForListValue(value, index);
+                                    },
+                                    validator: (String? value) {
+                                      final message = _validator.byField(
+                                        _boxDto,
+                                        "listUser",
+                                      )(value);
+                                      if (message == null) return null;
+                                      if (message == "fieldRequired") {
+                                        return translateError(
+                                          context,
+                                          "fieldRequired",
+                                        );
+                                      }
+                                      return message;
+                                    },
+                                  ),
                                 );
                               },
                             );
@@ -573,7 +723,12 @@ class _BoxFormPageState extends State<BoxFormPage>
                         return ElevatedButton(
                           onPressed: _parcialFormIsValid()
                               ? () {
-                                  widget.controller.getUserLocation();
+                                  widget.controller.getUserLocation(
+                                    _boxDto.gpsMode,
+                                    _boxDto.address.isNotEmpty
+                                        ? _boxDto.address
+                                        : null,
+                                  );
                                 }
                               : null,
                           child: Text("Salvar"),
@@ -581,7 +736,7 @@ class _BoxFormPageState extends State<BoxFormPage>
                       },
                     ),
                   ),
-                  SizedBox(height: MediaQuery.of(context).padding.bottom),
+                  SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
                 ]),
               ),
             ],

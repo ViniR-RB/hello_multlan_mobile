@@ -3,21 +3,25 @@ import 'package:hello_multlan/app/core/enums/image_source_type.dart';
 import 'package:hello_multlan/app/modules/box/dto/create_box_dto.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_form/commands/create_box_data_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_form/commands/get_image_command.dart';
+import 'package:hello_multlan/app/modules/box/ui/box_form/commands/get_user_location_by_address_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_form/commands/get_user_location_send_form_command.dart';
 
 class BoxFormController {
   final CreateBoxDataCommand _createBoxCommand;
   final GetImageCommand _getImageCommand;
   final GetUserLocationSendFormCommand _getUserLocationSendFormCommand;
+  final GetUserLocationByAddressCommand _getUserLocationByAddressCommand;
   final ValueNotifier<List<bool>> selectedGps = ValueNotifier([true, false]);
 
   BoxFormController({
     required GetImageCommand getImageCommand,
     required CreateBoxDataCommand createBoxCommand,
     required GetUserLocationSendFormCommand getUserLocationSendFormCommand,
+    required GetUserLocationByAddressCommand getUserLocationByAddressCommand,
   }) : _getImageCommand = getImageCommand,
        _getUserLocationSendFormCommand = getUserLocationSendFormCommand,
-       _createBoxCommand = createBoxCommand;
+       _createBoxCommand = createBoxCommand,
+       _getUserLocationByAddressCommand = getUserLocationByAddressCommand;
 
   Future<void> getImageFromGallery() async =>
       await _getImageCommand.execute(ImageSourceType.gallery);
@@ -25,7 +29,16 @@ class BoxFormController {
   Future<void> getImageFromCamera() async =>
       await _getImageCommand.execute(ImageSourceType.camera);
 
-  Future<void> getUserLocation() => _getUserLocationSendFormCommand.execute();
+  Future<void> getUserLocation(String gpsMode, [String? address]) {
+    if (address == null) {
+      return _getUserLocationSendFormCommand.execute();
+    }
+    return switch (gpsMode) {
+      "PHONE" => _getUserLocationSendFormCommand.execute(),
+      "ADDRESS" => _getUserLocationByAddressCommand.execute(address),
+      _ => _getUserLocationSendFormCommand.execute(),
+    };
+  }
 
   void resetImageSelected() {
     _getImageCommand.reset();

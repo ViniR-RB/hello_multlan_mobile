@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:hello_multlan/app/modules/box/repositories/models/box_zone_enum.dart';
 import 'package:lucid_validation/lucid_validation.dart';
 
 class CreateBoxDto extends ChangeNotifier {
@@ -12,6 +13,8 @@ class CreateBoxDto extends ChangeNotifier {
   int filledSpace;
   num signal;
   List<String> listUser;
+  String gpsMode;
+  String address;
   String note;
   String zone;
   File? image;
@@ -23,8 +26,10 @@ class CreateBoxDto extends ChangeNotifier {
     this.freeSpace = 0,
     this.filledSpace = 0,
     this.signal = 0.0,
+    this.gpsMode = "PHONE",
+    this.address = "",
     this.note = "",
-    this.zone = "",
+    this.zone = "SAFE",
     List<String>? listUser,
     this.image,
   }) : listUser = List<String>.from(listUser ?? []);
@@ -76,6 +81,16 @@ class CreateBoxDto extends ChangeNotifier {
 
   set setImageFile(File file) {
     image = file;
+    notifyListeners();
+  }
+
+  set setGpsMode(String value) {
+    switch (value) {
+      case "PHONE" || "ADDRESS":
+        gpsMode = value;
+      default:
+        gpsMode = "PHONE";
+    }
     notifyListeners();
   }
 
@@ -148,6 +163,11 @@ class CreateBoxDto extends ChangeNotifier {
       listUser: List<String>.from(json['listUser'] ?? []),
     );
   }
+
+  set setAddress(String value) {
+    address = value;
+    notifyListeners();
+  }
 }
 
 class CreateBoxDtoValidator extends LucidValidator<CreateBoxDto> {
@@ -169,13 +189,38 @@ class CreateBoxDtoValidator extends LucidValidator<CreateBoxDto> {
       "noteMinLength",
       "noteMinLength",
     );
-
+    ruleFor((box) => box.gpsMode, key: "gpsMode").notEmpty().must(
+      (gpsMode) => gpsMode == "PHONE" || gpsMode == "ADDRESS",
+      "invalidGpsMode",
+      "invalidGpsMode",
+    );
+    ruleFor(
+      (box) => box.address,
+      key: "address",
+    ).notEmpty().minLength(3).when((box) => box.gpsMode == "ADDRESS");
     ruleFor((box) => box.signal, key: "signal").greaterThan(1);
+    ruleFor(
+          (box) => box.zone,
+          key: 'zone',
+        )
+        .must(
+          (zoneDto) => BoxZoneEnum.values.any((zone) => zone.value == zoneDto),
+          "Zona invalida",
+          "invalidZone",
+        )
+        .notEmpty();
+
     ruleFor((box) => box.image, key: "image").isNotNull();
     ruleFor(
-      (box) => box.listUser,
-      key: "listUser",
-    ).setEach(SimpleUserValidator());
+          (box) => box.listUser,
+          key: "listUser",
+        )
+        .mustWith(
+          (listUser, box) => listUser.length == box.filledSpace,
+          "listUserMustMatchFilledSpace",
+          "listUserMustMatchFilledSpace",
+        )
+        .setEach(SimpleUserValidator());
   }
 }
 

@@ -9,6 +9,7 @@ import 'package:hello_multlan/app/modules/box/ui/box_form/box_form_controller.da
 import 'package:hello_multlan/app/modules/box/ui/box_form/box_form_page.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_form/commands/create_box_data_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_form/commands/get_image_command.dart';
+import 'package:hello_multlan/app/modules/box/ui/box_form/commands/get_user_location_by_address_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_form/commands/get_user_location_send_form_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_form/commands/logout_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_hub/box_hub_controller.dart';
@@ -37,6 +38,7 @@ class BoxModule extends Module {
     i.add(GetImageCommand.new);
     i.add(WatchUserPositionCommand.new);
     i.add(GetUserLocationSendFormCommand.new);
+    i.add(GetUserLocationByAddressCommand.new);
     i.add(CreateBoxDataCommand.new);
     i.add(GetBoxByIdCommand.new);
     i.add(LogoutCommand.new);
@@ -65,17 +67,20 @@ class BoxModule extends Module {
             Modular.get<GetUserLocationSendFormCommand>();
 
         final createBoxDataCommand = Modular.get<CreateBoxDataCommand>();
-
+        final getUserLocationByAddressCommand =
+            Modular.get<GetUserLocationByAddressCommand>();
         final controller = BoxFormController(
           getImageCommand: getImageCommand,
           createBoxCommand: createBoxDataCommand,
           getUserLocationSendFormCommand: getUserLocationSendFormCommand,
+          getUserLocationByAddressCommand: getUserLocationByAddressCommand,
         );
         return BoxFormPage(
           controller: controller,
           getImageCommand: getImageCommand,
           getUserLocationSendFormCommand: getUserLocationSendFormCommand,
           createBoxDataCommand: createBoxDataCommand,
+          getUserLocationByAddressCommand: getUserLocationByAddressCommand,
         );
       },
     );
