@@ -11,6 +11,7 @@
   "locationPermissionDeniedForever": "Permissão de localização negada permanentemente. Por favor ative-a nas configurações do seu dispositivo.",
   "imagePickerNotFound": "Nenhuma imagem foi selecionada",
   "cameraAccessDenied": "Ajuste as permissões de acesso à galeria de celulares para continuar",
+  "addressNotFound": "Endereço não encontrado",
   "photoAccessDenied": "Ajuste as permissoes de acesso a galeria do celular para continuar",
   "timeout": "Tempo excedido nessa operação",
   "successInCreateBox": "Criação da Caixa foi um sucesso",

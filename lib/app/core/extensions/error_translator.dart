@@ -31,6 +31,8 @@ mixin ErrorTranslator<T extends StatefulWidget> on State<T> {
         return l10n.fieldRequired;
       case "mapNotLoading":
         return l10n.mapNotLoading;
+      case "addressNotFound":
+        return l10n.addressNotFound;
       default:
         return l10n.unknownError;
     }

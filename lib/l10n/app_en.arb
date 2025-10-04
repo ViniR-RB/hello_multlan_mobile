@@ -11,6 +11,7 @@
   "locationPermissionDeniedForever": "Location permission denied permanently. Please enable it in your device settings.",
   "imagePickerNotFound": "No image selected",
   "cameraAccessDenied": "Adjust as camera settings to allow access to it",
+  "addressNotFound": "Address is not found",
   "photoAccessDenied": "Adjust cell phone gallery access permissions to continue",
   "timeout": "Time Exceeded in this operation",
   "successInCreateBox": "Create Box Successfully",

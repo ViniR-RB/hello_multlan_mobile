@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hello_multlan/app/core/either/either.dart';
 import 'package:hello_multlan/app/core/exceptions/app_exception.dart';
@@ -51,9 +52,30 @@ class GeoLocatorServiceImpl implements GeoLocatorService {
   @override
   AsyncResult<AppException, LatitudeLongitudeModel> getLocationByAddress(
     String address,
-  ) {
-    // TODO: implement getLocationByAddress
-    throw UnimplementedError();
+  ) async {
+    try {
+      List<Location> locations = await locationFromAddress(address);
+      if (locations.isEmpty) {
+        return Failure(
+          GeoLocatorException('addressNotFound'),
+        );
+      }
+      final location = locations.first;
+      return Success(
+        LatitudeLongitudeModel.fromData(
+          latitude: location.latitude,
+          longitude: location.longitude,
+        ),
+      );
+    } catch (e, s) {
+      return Failure(
+        GeoLocatorException(
+          'unknownError',
+          e.toString(),
+          s,
+        ),
+      );
+    }
   }
 
   @override

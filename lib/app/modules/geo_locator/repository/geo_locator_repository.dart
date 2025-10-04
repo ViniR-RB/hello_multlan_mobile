@@ -5,5 +5,8 @@ import 'package:hello_multlan/app/core/models/latitude_longitude_model.dart';
 
 abstract interface class GeoLocatorRepository {
   AsyncResult<AppException, LatitudeLongitudeModel> getUserLocation();
+  AsyncResult<AppException, LatitudeLongitudeModel> getLocationByAddress(
+    String address,
+  );
   StreamResult<AppException, LatitudeLongitudeModel> watchPosition();
 }

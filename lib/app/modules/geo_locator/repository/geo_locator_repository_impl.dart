@@ -20,4 +20,11 @@ class GeoLocatorRepositoryImpl implements GeoLocatorRepository {
   AsyncResult<AppException, LatitudeLongitudeModel> getUserLocation() {
     return _geoLocatorService.getCurrentLocation();
   }
+
+  @override
+  AsyncResult<AppException, LatitudeLongitudeModel> getLocationByAddress(
+    String address,
+  ) {
+    return _geoLocatorService.getLocationByAddress(address);
+  }
 }
