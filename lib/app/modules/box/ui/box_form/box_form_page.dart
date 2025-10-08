@@ -47,6 +47,24 @@ class _BoxFormPageState extends State<BoxFormPage>
     _boxDto.addUserForListByIndex("", _boxDto.listUser.length);
   }
 
+  _adjustUserListSize(int targetSize) {
+    final currentSize = _boxDto.listUser.length;
+
+    // Limita o targetSize ao valor máximo de freeSpace
+    final maxAllowed = _boxDto.freeSpace > 0 ? _boxDto.freeSpace : 0;
+    final limitedTargetSize = targetSize > maxAllowed ? maxAllowed : targetSize;
+
+    if (limitedTargetSize > currentSize) {
+      for (int i = currentSize; i < limitedTargetSize; i++) {
+        _boxDto.addUserForListByIndex("", i);
+      }
+    } else if (limitedTargetSize < currentSize) {
+      for (int i = currentSize - 1; i >= limitedTargetSize; i--) {
+        _boxDto.removeUserForListByIndex(i);
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -450,8 +468,13 @@ class _BoxFormPageState extends State<BoxFormPage>
                               );
                             }
                           },
-                          onChanged: (value) =>
-                              _boxDto.setFilledSpace = int.tryParse(value) ?? 0,
+                          onChanged: (value) {
+                            final filledSpace = int.tryParse(value) ?? 0;
+                            _boxDto.setFilledSpace = filledSpace;
+
+                            // Ajusta a lista de usuários baseada no filledSpace
+                            _adjustUserListSize(filledSpace);
+                          },
                         ),
                         TextFormField(
                           decoration: const InputDecoration(labelText: 'Sinal'),
@@ -654,13 +677,48 @@ class _BoxFormPageState extends State<BoxFormPage>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text("Clientes"),
-                            TextButton(
-                              onPressed: () => _addUser(),
-                              child: Text("Adicionar Cliente"),
+                            ListenableBuilder(
+                              listenable: _boxDto,
+                              builder: (context, child) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text("Clientes"),
+                                    if (_boxDto.freeSpace > 0)
+                                      Text(
+                                        "${_boxDto.filledSpace} / ${_boxDto.freeSpace}",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                  ],
+                                );
+                              },
+                            ),
+                            ListenableBuilder(
+                              listenable: _boxDto,
+                              builder: (context, child) {
+                                final canAddUser =
+                                    _boxDto.listUser.length <
+                                    _boxDto.filledSpace;
+
+                                return TextButton(
+                                  onPressed: canAddUser
+                                      ? () => _addUser()
+                                      : null,
+                                  child: Text(
+                                    "Adicionar Cliente",
+                                    style: TextStyle(
+                                      color: canAddUser ? null : Colors.grey,
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           ],
                         ),
+
                         ListenableBuilder(
                           listenable: _boxDto,
                           builder: (context, child) {
