@@ -24,9 +24,19 @@ class BoxRepositoryImpl implements BoxRepository {
        _imagePickerService = imagePickerService;
 
   @override
-  AsyncResult<AppException, List<BoxLiteModel>> getAllBoxes() async {
+  AsyncResult<AppException, List<BoxLiteModel>> getAllBoxesByFilters({
+    required double latMin,
+    required double lngMin,
+    required double latMax,
+    required double lngMax,
+  }) async {
     try {
-      final listBoxResult = await _gateway.getAllBoxes();
+      final listBoxResult = await _gateway.getAllBoxesByFilters(
+        latMin,
+        lngMin,
+        latMax,
+        lngMax,
+      );
 
       return Success(listBoxResult);
     } catch (e, s) {
@@ -47,7 +57,7 @@ class BoxRepositoryImpl implements BoxRepository {
   @override
   AsyncResult<AppException, Unit> createBox(CreateBoxDto box) async {
     try {
-      final createdBoxResponse = await _gateway.createBox(
+      await _gateway.createBox(
         box.toJson(),
       );
 

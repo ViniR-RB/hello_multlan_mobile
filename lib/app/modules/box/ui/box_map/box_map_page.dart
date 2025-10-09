@@ -7,7 +7,7 @@ import 'package:hello_multlan/app/core/extensions/loader_message.dart';
 import 'package:hello_multlan/app/core/extensions/theme_extension.dart';
 import 'package:hello_multlan/app/core/states/command_state.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/box_map_controller.dart';
-import 'package:hello_multlan/app/modules/box/ui/box_map/command/get_all_boxes_command.dart';
+import 'package:hello_multlan/app/modules/box/ui/box_map/command/get_boxes_by_filters_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/command/watch_user_position_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/widgets/box_detail_button_sheet.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/widgets/user_location_widget.dart';
@@ -16,12 +16,12 @@ import 'package:latlong2/latlong.dart';
 
 class BoxMapPage extends StatefulWidget {
   final BoxMapController controller;
-  final GetAllBoxesCommand getAllBoxesCommand;
+  final GetBoxesByFiltersCommand getBoxesByFiltersCommand;
   final WatchUserPositionCommand watchUserPositionCommand;
   const BoxMapPage({
     super.key,
     required this.controller,
-    required this.getAllBoxesCommand,
+    required this.getBoxesByFiltersCommand,
     required this.watchUserPositionCommand,
   });
 
@@ -34,12 +34,19 @@ class _BoxMapPageState extends State<BoxMapPage>
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.controller.getAllBoxes();
       widget.controller.watchUserPosition();
+      widget.controller.startListeningCameraChanges();
+      widget.controller.fetchInitialBoxes();
       widget.watchUserPositionCommand.addListener(_listerUserPosition);
-      widget.getAllBoxesCommand.addListener(_getAllBoxesListener);
+      widget.getBoxesByFiltersCommand.addListener(_getBoxesByFiltersListener);
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    widget.controller.dispose();
+    super.dispose();
   }
 
   _listerUserPosition() {
@@ -54,14 +61,14 @@ class _BoxMapPageState extends State<BoxMapPage>
     }
   }
 
-  _getAllBoxesListener() {
-    if (widget.getAllBoxesCommand.state is CommandLoading) {
+  _getBoxesByFiltersListener() {
+    if (widget.getBoxesByFiltersCommand.state is CommandLoading) {
       notifier.showLoader();
     }
-    if (widget.getAllBoxesCommand.state is CommandSuccess) {
+    if (widget.getBoxesByFiltersCommand.state is CommandSuccess) {
       notifier.hideLoader();
     }
-    if (widget.getAllBoxesCommand.state case CommandFailure(
+    if (widget.getBoxesByFiltersCommand.state case CommandFailure(
       exception: final exception,
     )) {
       notifier.hideLoader();
@@ -82,7 +89,7 @@ class _BoxMapPageState extends State<BoxMapPage>
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              widget.controller.getAllBoxes();
+              widget.controller.fetchInitialBoxes();
             },
           ),
         ],
@@ -92,7 +99,6 @@ class _BoxMapPageState extends State<BoxMapPage>
         children: [
           FlutterMap(
             mapController: widget.controller.flutterMapController,
-
             options: MapOptions(
               initialCenter: const LatLng(-5.1750424, -42.7906436),
               keepAlive: true,
@@ -108,6 +114,7 @@ class _BoxMapPageState extends State<BoxMapPage>
             children: [
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+
                 maxZoom: 19,
                 errorTileCallback: (tile, error, stackTrace) {
                   if (error is SocketException) {
@@ -125,9 +132,9 @@ class _BoxMapPageState extends State<BoxMapPage>
                 userAgentPackageName: "dev.vini.br.hello_multlan",
               ),
               ListenableBuilder(
-                listenable: widget.getAllBoxesCommand,
+                listenable: widget.getBoxesByFiltersCommand,
                 builder: (context, child) {
-                  return switch (widget.getAllBoxesCommand.state) {
+                  return switch (widget.getBoxesByFiltersCommand.state) {
                     CommandSuccess(value: final boxList) => MarkerLayer(
                       markers: boxList
                           .map(

@@ -16,7 +16,7 @@ import 'package:hello_multlan/app/modules/box/ui/box_hub/box_hub_controller.dart
 import 'package:hello_multlan/app/modules/box/ui/box_hub/box_hub_page.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/box_map_controller.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/box_map_page.dart';
-import 'package:hello_multlan/app/modules/box/ui/box_map/command/get_all_boxes_command.dart';
+import 'package:hello_multlan/app/modules/box/ui/box_map/command/get_boxes_by_filters_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/command/watch_user_position_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map_detail/commands/get_box_by_id_command.dart';
 import 'package:hello_multlan/app/modules/geo_locator/geo_locator_module.dart';
@@ -34,7 +34,7 @@ class BoxModule extends Module {
     i.addLazySingleton<BoxRepository>(BoxRepositoryImpl.new);
     i.addLazySingleton(() => BoxGateway(Modular.get<RestClient>()));
 
-    i.add(GetAllBoxesCommand.new);
+    i.add(GetBoxesByFiltersCommand.new);
     i.add(GetImageCommand.new);
     i.add(WatchUserPositionCommand.new);
     i.add(GetUserLocationSendFormCommand.new);
@@ -87,20 +87,20 @@ class BoxModule extends Module {
     r.child(
       "/map",
       child: (_) {
-        final GetAllBoxesCommand getAllBoxesCommand =
-            Modular.get<GetAllBoxesCommand>();
+        final GetBoxesByFiltersCommand getBoxesByFiltersCommand =
+            Modular.get<GetBoxesByFiltersCommand>();
 
         final WatchUserPositionCommand watchUserPositionCommand =
             Modular.get<WatchUserPositionCommand>();
 
         final BoxMapController controller = BoxMapController(
-          getAllBoxesCommand: getAllBoxesCommand,
+          getBoxesByFiltersCommand: getBoxesByFiltersCommand,
           watchUserPositionCommand: watchUserPositionCommand,
         );
 
         return BoxMapPage(
           controller: controller,
-          getAllBoxesCommand: getAllBoxesCommand,
+          getBoxesByFiltersCommand: getBoxesByFiltersCommand,
           watchUserPositionCommand: watchUserPositionCommand,
         );
       },

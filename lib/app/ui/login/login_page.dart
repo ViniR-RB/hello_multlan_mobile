@@ -74,171 +74,223 @@ class _LoginPageState extends State<LoginPage>
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenHeight < 700;
+    final isExtraSmallScreen = screenHeight < 600;
+
     return CustomScaffoldPrimary(
       child: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              flex: 3,
-              child: SizedBox(
-                width: double.infinity,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight,
+                ),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Assets.images.logoCompleta.image(),
-                  ],
-                ),
-              ),
-            ),
-
-            // Parte inferior com formulário (70% da tela)
-            Expanded(
-              flex: 7,
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(32.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 24),
-
-                      Row(
+                    // Parte superior com logo - Adaptável
+                    SizedBox(
+                      height: isExtraSmallScreen
+                          ? constraints.maxHeight * 0.25
+                          : isSmallScreen
+                          ? constraints.maxHeight * 0.3
+                          : constraints.maxHeight * 0.35,
+                      width: double.infinity,
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            'Faça Login',
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF1565C0),
-                            ),
+                          Assets.images.logoCompleta.image(
+                            width: isExtraSmallScreen
+                                ? screenWidth * 0.6
+                                : isSmallScreen
+                                ? screenWidth * 0.7
+                                : screenWidth * 0.8,
+                            height: isExtraSmallScreen
+                                ? 80
+                                : isSmallScreen
+                                ? 100
+                                : 120,
                           ),
                         ],
                       ),
+                    ),
 
-                      const SizedBox(height: 32),
-
-                      // Campo E-mail
-                      Text(
-                        'E-mail',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF1565C0),
+                    // Parte inferior com formulário - Adaptável
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        onChanged: credentials.setEmail,
-                        validator: validator.byField(credentials, "email"),
-                        decoration: InputDecoration(
-                          hintText: 'Digite seu e-mail',
-                          hintStyle: TextStyle(color: Colors.grey[400]),
-                          filled: true,
-                          fillColor: Colors.grey[50],
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Color(0xFF1565C0)),
-                          ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isSmallScreen ? 24.0 : 32.0,
+                          vertical: isExtraSmallScreen ? 16.0 : 24.0,
                         ),
-                      ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 24),
 
-                      const SizedBox(height: 24),
-
-                      // Campo Senha
-                      Text(
-                        'Senha',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF1565C0),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        onChanged: credentials.setPassword,
-                        validator: validator.byField(credentials, "password"),
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          hintText: 'Digite sua senha',
-                          hintStyle: TextStyle(color: Colors.grey[400]),
-                          filled: true,
-                          fillColor: Colors.grey[50],
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Color(0xFF1565C0)),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      ListenableBuilder(
-                        listenable: credentials,
-                        builder: (context, child) {
-                          return SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: ElevatedButton(
-                              onPressed: _isValid()
-                                  ? () {
-                                      widget.controller.login(credentials);
-                                    }
-                                  : null,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF1565C0),
-                                disabledBackgroundColor: Colors.grey[300],
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Faça Login',
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF1565C0),
+                                  ),
                                 ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 32),
+
+                            // Campo E-mail
+                            Text(
+                              'E-mail',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF1565C0),
                               ),
-                              child: Text(
-                                "Entrar",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              onChanged: credentials.setEmail,
+                              validator: validator.byField(
+                                credentials,
+                                "email",
+                              ),
+                              decoration: InputDecoration(
+                                hintText: 'Digite seu e-mail',
+                                hintStyle: TextStyle(color: Colors.grey[400]),
+                                filled: true,
+                                fillColor: Colors.grey[50],
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey[300]!,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey[300]!,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: Color(0xFF1565C0),
+                                  ),
                                 ),
                               ),
                             ),
-                          );
-                        },
-                      ),
 
-                      SizedBox(
-                        height: MediaQuery.of(context).padding.bottom,
+                            const SizedBox(height: 24),
+
+                            // Campo Senha
+                            Text(
+                              'Senha',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF1565C0),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              onChanged: credentials.setPassword,
+                              validator: validator.byField(
+                                credentials,
+                                "password",
+                              ),
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                hintText: 'Digite sua senha',
+                                hintStyle: TextStyle(color: Colors.grey[400]),
+                                filled: true,
+                                fillColor: Colors.grey[50],
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey[300]!,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey[300]!,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide(
+                                    color: Color(0xFF1565C0),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            ListenableBuilder(
+                              listenable: credentials,
+                              builder: (context, child) {
+                                return SizedBox(
+                                  width: double.infinity,
+                                  height: 50,
+                                  child: ElevatedButton(
+                                    onPressed: _isValid()
+                                        ? () {
+                                            widget.controller.login(
+                                              credentials,
+                                            );
+                                          }
+                                        : null,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Color(0xFF1565C0),
+                                      disabledBackgroundColor: Colors.grey[300],
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      "Entrar",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+
+                            // Espaço extra para evitar problemas de teclado
+                            SizedBox(
+                              height:
+                                  MediaQuery.of(context).padding.bottom + 16,
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );

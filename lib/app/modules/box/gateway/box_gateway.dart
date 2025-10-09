@@ -20,6 +20,17 @@ abstract class BoxGateway {
   })
   Future<List<BoxLiteModel>> getAllBoxes();
 
+  @GET("/api/box/")
+  @Headers(<String, dynamic>{
+    'DIO_AUTH_KEY': true,
+  })
+  Future<List<BoxLiteModel>> getAllBoxesByFilters(
+    @Query("latMin") double latMin,
+    @Query("lngMin") double lngMin,
+    @Query("latMax") double latMax,
+    @Query("lngMax") double lngMax,
+  );
+
   @POST("/api/box")
   @Headers(<String, dynamic>{
     'DIO_AUTH_KEY': true,

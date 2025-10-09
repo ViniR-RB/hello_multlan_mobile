@@ -8,7 +8,12 @@ import 'package:hello_multlan/app/modules/box/repositories/models/box_lite_model
 import 'package:hello_multlan/app/modules/box/repositories/models/box_model.dart';
 
 abstract interface class BoxRepository {
-  AsyncResult<AppException, List<BoxLiteModel>> getAllBoxes();
+  AsyncResult<AppException, List<BoxLiteModel>> getAllBoxesByFilters({
+    required double latMin,
+    required double lngMin,
+    required double latMax,
+    required double lngMax,
+  });
   AsyncResult<AppException, File> getImageFromGallery();
   AsyncResult<AppException, File> getImageFromCamera();
   AsyncResult<AppException, Unit> createBox(CreateBoxDto box);
