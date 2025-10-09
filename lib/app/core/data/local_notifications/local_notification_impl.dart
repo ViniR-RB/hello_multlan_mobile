@@ -29,7 +29,7 @@ class LocalNotificationImpl implements LocalNotification {
           channelDescription: 'Canal principal para notificações',
           importance: Importance.high,
           priority: Priority.high,
-          icon: '@drawable/ic_notification',
+          icon: '@mipmap/launcher_icon',
           showWhen: false,
         ),
       ),
