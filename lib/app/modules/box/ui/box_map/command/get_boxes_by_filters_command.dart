@@ -3,10 +3,13 @@ import 'package:hello_multlan/app/core/exceptions/app_exception.dart';
 import 'package:hello_multlan/app/core/states/command_state.dart';
 import 'package:hello_multlan/app/modules/box/repositories/box_repository.dart';
 import 'package:hello_multlan/app/modules/box/repositories/models/box_lite_model.dart';
+import 'package:hello_multlan/app/modules/box/repositories/models/box_zone_enum.dart';
 
 class GetBoxesByFiltersCommand
     extends BaseCommand<List<BoxLiteModel>, AppException> {
   final BoxRepository _repository;
+
+  BoxZoneEnum? _boxZone;
 
   GetBoxesByFiltersCommand({
     required BoxRepository repository,
@@ -26,6 +29,7 @@ class GetBoxesByFiltersCommand
       lngMin: lngMin,
       latMax: latMax,
       lngMax: lngMax,
+      zone: _boxZone?.value,
     );
 
     listBoxResult.when(
@@ -38,8 +42,15 @@ class GetBoxesByFiltersCommand
     );
   }
 
+  void setBoxZone(BoxZoneEnum? zone) {
+    _boxZone = zone;
+  }
+
   @override
   void reset() {
+    setBoxZone(null);
     setState(CommandInitial([]));
   }
+
+  BoxZoneEnum? get currentBoxZone => _boxZone;
 }

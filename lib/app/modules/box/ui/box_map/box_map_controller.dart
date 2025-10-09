@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_map/flutter_map.dart';
+import 'package:hello_multlan/app/modules/box/repositories/models/box_zone_enum.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/command/get_boxes_by_filters_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/command/watch_user_position_command.dart';
 
@@ -40,6 +41,13 @@ class BoxMapController {
   void fetchInitialBoxes() {
     _fetchBoxesForCurrentView();
   }
+
+  void setBoxZone(BoxZoneEnum? zone) {
+    _getBoxesByFiltersCommand.setBoxZone(zone);
+    _fetchBoxesForCurrentView(); // Refetch with new zone
+  }
+
+  BoxZoneEnum? get currentBoxZone => _getBoxesByFiltersCommand.currentBoxZone;
 
   void _fetchBoxesForCurrentView() {
     final bounds = flutterMapController.camera.visibleBounds;

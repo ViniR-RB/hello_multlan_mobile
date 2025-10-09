@@ -13,6 +13,7 @@ abstract interface class BoxRepository {
     required double lngMin,
     required double latMax,
     required double lngMax,
+    String? zone,
   });
   AsyncResult<AppException, File> getImageFromGallery();
   AsyncResult<AppException, File> getImageFromCamera();

@@ -29,6 +29,7 @@ class BoxRepositoryImpl implements BoxRepository {
     required double lngMin,
     required double latMax,
     required double lngMax,
+    String? zone,
   }) async {
     try {
       final listBoxResult = await _gateway.getAllBoxesByFilters(
@@ -36,6 +37,7 @@ class BoxRepositoryImpl implements BoxRepository {
         lngMin,
         latMax,
         lngMax,
+        zone,
       );
 
       return Success(listBoxResult);

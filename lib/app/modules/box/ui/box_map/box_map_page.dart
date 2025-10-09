@@ -6,6 +6,7 @@ import 'package:hello_multlan/app/core/extensions/error_translator.dart';
 import 'package:hello_multlan/app/core/extensions/loader_message.dart';
 import 'package:hello_multlan/app/core/extensions/theme_extension.dart';
 import 'package:hello_multlan/app/core/states/command_state.dart';
+import 'package:hello_multlan/app/modules/box/repositories/models/box_zone_enum.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/box_map_controller.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/command/get_boxes_by_filters_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/command/watch_user_position_command.dart';
@@ -86,6 +87,12 @@ class _BoxMapPageState extends State<BoxMapPage>
       appBar: AppBar(
         title: const Text('Box Map'),
         actions: [
+          IconButton(
+            onPressed: () {
+              _showFilterDialog();
+            },
+            icon: Icon(Icons.filter_list),
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
@@ -206,6 +213,115 @@ class _BoxMapPageState extends State<BoxMapPage>
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  void _showFilterDialog() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Filtrar por Zona',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+
+            ListTile(
+              leading: Container(
+                width: 16,
+                height: 16,
+                decoration: const BoxDecoration(
+                  color: Colors.blue,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              title: const Text('Todas'),
+              trailing: widget.getBoxesByFiltersCommand.currentBoxZone == null
+                  ? const Icon(Icons.check, color: Colors.green)
+                  : null,
+              onTap: () {
+                widget.controller.setBoxZone(null);
+
+                Navigator.pop(context);
+              },
+            ),
+
+            ListTile(
+              leading: Container(
+                width: 16,
+                height: 16,
+                decoration: const BoxDecoration(
+                  color: Colors.green,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              title: const Text('Segura'),
+              trailing:
+                  widget.getBoxesByFiltersCommand.currentBoxZone ==
+                      BoxZoneEnum.safe
+                  ? const Icon(Icons.check, color: Colors.green)
+                  : null,
+              onTap: () {
+                widget.controller.setBoxZone(BoxZoneEnum.safe);
+                Navigator.pop(context);
+              },
+            ),
+
+            ListTile(
+              leading: Container(
+                width: 16,
+                height: 16,
+                decoration: const BoxDecoration(
+                  color: Colors.orange,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              title: const Text('Moderada'),
+              trailing:
+                  widget.getBoxesByFiltersCommand.currentBoxZone ==
+                      BoxZoneEnum.moderate
+                  ? const Icon(Icons.check, color: Colors.green)
+                  : null,
+              onTap: () {
+                widget.controller.setBoxZone(BoxZoneEnum.moderate);
+
+                Navigator.pop(context);
+              },
+            ),
+
+            ListTile(
+              leading: Container(
+                width: 16,
+                height: 16,
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              title: const Text('Perigosa'),
+              trailing:
+                  widget.getBoxesByFiltersCommand.currentBoxZone ==
+                      BoxZoneEnum.danger
+                  ? const Icon(Icons.check, color: Colors.green)
+                  : null,
+              onTap: () {
+                widget.controller.setBoxZone(BoxZoneEnum.danger);
+
+                Navigator.pop(context);
+              },
+            ),
+
+            SizedBox(
+              height: MediaQuery.of(context).padding.bottom,
+            ),
+          ],
+        ),
       ),
     );
   }

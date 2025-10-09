@@ -29,6 +29,7 @@ abstract class BoxGateway {
     @Query("lngMin") double lngMin,
     @Query("latMax") double latMax,
     @Query("lngMax") double lngMax,
+    @Query("zone") String? zone,
   );
 
   @POST("/api/box")
