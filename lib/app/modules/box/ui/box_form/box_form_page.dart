@@ -422,7 +422,7 @@ class _BoxFormPageState extends State<BoxFormPage>
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 32.0,
+                      horizontal: 16.0,
                     ),
                     child: Column(
                       spacing: 12,
