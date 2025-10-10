@@ -297,7 +297,35 @@ class _BoxFormPageState extends State<BoxFormPage>
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: CustomScrollView(
             slivers: [
-              CustomSliverAppBar(title: "Criar Caixa", actions: []),
+              CustomSliverAppBar(
+                title: "Criar Caixa",
+                actions: [
+                  ListenableBuilder(
+                    listenable: _boxDto,
+                    builder: (context, child) {
+                      return IconButton(
+                        onPressed: _parcialFormIsValid()
+                            ? () {
+                                widget.controller.getUserLocation(
+                                  _boxDto.gpsMode,
+                                  _boxDto.address.isNotEmpty
+                                      ? _boxDto.address
+                                      : null,
+                                );
+                              }
+                            : null,
+                        icon: Icon(
+                          Icons.save,
+                          color: _parcialFormIsValid()
+                              ? Colors.white
+                              : Colors.grey,
+                        ),
+                        tooltip: "Salvar",
+                      );
+                    },
+                  ),
+                ],
+              ),
               SliverList(
                 delegate: SliverChildListDelegate([
                   const SizedBox(
@@ -431,59 +459,102 @@ class _BoxFormPageState extends State<BoxFormPage>
                         TextFormField(
                           decoration: const InputDecoration(
                             labelText: 'Rótulo',
+                            prefixIcon: Icon(Icons.label),
                           ),
                           onChanged: (value) => _boxDto.setLabel = value,
                           validator: _validator.byField(_boxDto, "label"),
                         ),
 
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            final fieldWidth = constraints.maxWidth > 600
+                                ? MediaQuery.of(context).size.width * 0.45
+                                : MediaQuery.of(context).size.width;
+                            return Wrap(
+                              alignment: WrapAlignment.center,
+                              crossAxisAlignment: WrapCrossAlignment.start,
+                              runSpacing: 16,
+                              spacing: 16,
+                              children: [
+                                SizedBox(
+                                  width: fieldWidth,
+                                  child: TextFormField(
+                                    textInputAction: TextInputAction.next,
+                                    keyboardType: TextInputType.number,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Total de Clientes',
+                                      prefixIcon: Icon(Icons.space_bar),
+                                    ),
+                                    validator: _validator.byField(
+                                      _boxDto,
+                                      "freeSpace",
+                                    ),
+                                    onChanged: (value) => _boxDto.setFreeSpace =
+                                        int.tryParse(value) ?? 0,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: fieldWidth,
+                                  child: TextFormField(
+                                    textInputAction: TextInputAction.next,
+                                    keyboardType: TextInputType.number,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Clientes Ativos',
+                                      prefixIcon: Icon(Icons.people),
+                                    ),
+                                    validator: (String? value) {
+                                      final getExceptionTranslate = _validator
+                                          .getExceptions(_boxDto)
+                                          .any(
+                                            (exception) =>
+                                                exception.message ==
+                                                "filledSpaceGreaterThanFreeSpace",
+                                          );
+
+                                      if (getExceptionTranslate == true) {
+                                        return translateError(
+                                          context,
+                                          "filledSpaceGreaterThanFreeSpace",
+                                        );
+                                      } else {
+                                        return _validator.byField(
+                                          _boxDto,
+                                          "filledSpace",
+                                        )(
+                                          value,
+                                        );
+                                      }
+                                    },
+                                    onChanged: (value) {
+                                      final filledSpace =
+                                          int.tryParse(value) ?? 0;
+                                      _boxDto.setFilledSpace = filledSpace;
+
+                                      // Ajusta a lista de usuários baseada no filledSpace
+                                      _adjustUserListSize(filledSpace);
+                                    },
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+
                         TextFormField(
                           decoration: const InputDecoration(
-                            labelText: 'Total de Clientes',
+                            labelText: 'Sinal',
+                            prefixIcon: Icon(Icons.network_cell),
                           ),
-                          validator: _validator.byField(_boxDto, "freeSpace"),
-                          onChanged: (value) =>
-                              _boxDto.setFreeSpace = int.tryParse(value) ?? 0,
-                        ),
-                        TextFormField(
-                          decoration: const InputDecoration(
-                            labelText: 'Clientes Ativos',
-                          ),
-                          validator: (String? value) {
-                            final getExceptionTranslate = _validator
-                                .getExceptions(_boxDto)
-                                .any(
-                                  (exception) =>
-                                      exception.message ==
-                                      "filledSpaceGreaterThanFreeSpace",
-                                );
-
-                            if (getExceptionTranslate == true) {
-                              return translateError(
-                                context,
-                                "filledSpaceGreaterThanFreeSpace",
-                              );
-                            } else {
-                              return _validator.byField(_boxDto, "filledSpace")(
-                                value,
-                              );
-                            }
-                          },
-                          onChanged: (value) {
-                            final filledSpace = int.tryParse(value) ?? 0;
-                            _boxDto.setFilledSpace = filledSpace;
-
-                            // Ajusta a lista de usuários baseada no filledSpace
-                            _adjustUserListSize(filledSpace);
-                          },
-                        ),
-                        TextFormField(
-                          decoration: const InputDecoration(labelText: 'Sinal'),
                           validator: _validator.byField(_boxDto, "signal"),
                           onChanged: (value) =>
                               _boxDto.setSignal = num.tryParse(value) ?? 0,
                         ),
                         TextFormField(
-                          decoration: const InputDecoration(labelText: 'Nota'),
+                          maxLines: 3,
+                          decoration: const InputDecoration(
+                            labelText: 'Nota',
+                            prefixIcon: Icon(Icons.note_alt),
+                          ),
                           validator: (String? value) {
                             final getExceptionTranslate = _validator
                                 .getExceptions(_boxDto)
@@ -517,11 +588,30 @@ class _BoxFormPageState extends State<BoxFormPage>
                           items: BoxZoneEnum.values.map((zone) {
                             return DropdownMenuItem<BoxZoneEnum>(
                               value: zone,
-                              child: Text(switch (zone) {
-                                BoxZoneEnum.safe => "Segura",
-                                BoxZoneEnum.moderate => "Moderada",
-                                BoxZoneEnum.danger => "Perigosa",
-                              }),
+                              child: Row(
+                                spacing: 8,
+                                children: [
+                                  switch (zone) {
+                                    BoxZoneEnum.safe => const Icon(
+                                      Icons.shield,
+                                      color: Colors.green,
+                                    ),
+                                    BoxZoneEnum.moderate => const Icon(
+                                      Icons.warning,
+                                      color: Colors.orange,
+                                    ),
+                                    BoxZoneEnum.danger => const Icon(
+                                      Icons.error,
+                                      color: Colors.red,
+                                    ),
+                                  },
+                                  Text(switch (zone) {
+                                    BoxZoneEnum.safe => "Segura",
+                                    BoxZoneEnum.moderate => "Moderada",
+                                    BoxZoneEnum.danger => "Perigosa",
+                                  }),
+                                ],
+                              ),
                             );
                           }).toList(),
                           onChanged: (zone) {
@@ -626,9 +716,7 @@ class _BoxFormPageState extends State<BoxFormPage>
                                   child: isEnderecoSelected
                                       ? SizedBox(
                                           key: const ValueKey('endereco'),
-                                          width:
-                                              MediaQuery.sizeOf(context).width *
-                                              .8,
+
                                           child: TextFormField(
                                             decoration: const InputDecoration(
                                               labelText:
@@ -789,7 +877,7 @@ class _BoxFormPageState extends State<BoxFormPage>
                                   );
                                 }
                               : null,
-                          child: Text("Salvar"),
+                          child: Text("Criar"),
                         );
                       },
                     ),
