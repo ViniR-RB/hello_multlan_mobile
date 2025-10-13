@@ -276,12 +276,6 @@ class _LoginPageState extends State<LoginPage>
                                 );
                               },
                             ),
-
-                            // Espaço extra para evitar problemas de teclado
-                            SizedBox(
-                              height:
-                                  MediaQuery.of(context).padding.bottom + 16,
-                            ),
                           ],
                         ),
                       ),

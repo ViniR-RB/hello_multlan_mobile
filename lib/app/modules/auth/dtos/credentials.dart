@@ -29,8 +29,8 @@ class CredentialsValidator extends LucidValidator<Credentials> {
     ).notEmpty().validEmail();
 
     ruleFor(
-      (credentials) => credentials.email,
-      key: 'email',
+      (credentials) => credentials.password,
+      key: 'password',
     ).notEmpty().minLength(6);
   }
 }
