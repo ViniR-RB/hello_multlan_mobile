@@ -34,16 +34,14 @@ class _OccurrenceListPageState extends State<OccurrenceListPage>
     with LoaderMessageMixin, ErrorTranslator {
   bool _isDisposed = false;
   final ScrollController _scrollController = ScrollController();
-
+  final reasonController = TextEditingController();
   @override
   void initState() {
     super.initState();
+    _setupScrollListener();
+    _setupCommandListeners();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && !_isDisposed) {
-        widget.getAllOccurrenceCommand.execute();
-        _setupScrollListener();
-        _setupCommandListeners();
-      }
+      widget.getAllOccurrenceCommand.execute();
     });
   }
 
@@ -55,9 +53,8 @@ class _OccurrenceListPageState extends State<OccurrenceListPage>
   }
 
   void _onCancelOccurrenceStateChange() {
-    if (!mounted || _isDisposed) return;
-
     final state = widget.cancelOccurrenceCommand.state;
+
     switch (state) {
       case CommandLoading():
         notifier.showLoader();
@@ -86,6 +83,7 @@ class _OccurrenceListPageState extends State<OccurrenceListPage>
     if (!mounted || _isDisposed) return;
 
     final state = widget.resolveOccurrenceCommand.state;
+
     switch (state) {
       case CommandLoading():
         notifier.showLoader();
@@ -177,36 +175,43 @@ class _OccurrenceListPageState extends State<OccurrenceListPage>
   }
 
   void _showCancelDialog(OccurrenceModel occurrence) {
-    final reasonController = TextEditingController();
-
+    reasonController.clear();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Cancelar Ocorrência'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Informe o motivo do cancelamento:'),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: reasonController,
-              decoration: const InputDecoration(
-                labelText: 'Motivo do cancelamento',
-                hintText: 'Digite o motivo...',
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Informe o motivo do cancelamento:'),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: reasonController,
+                decoration: const InputDecoration(
+                  labelText: 'Motivo do cancelamento',
+                  hintText: 'Digite o motivo...',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null ||
+                      value.trim().isEmpty ||
+                      value.length < 3) {
+                    return 'O motivo do cancelamento é obrigatório.';
+                  }
+                  return null;
+                },
+                maxLines: 3,
               ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty || value.length < 3) {
-                  return 'O motivo do cancelamento é obrigatório.';
-                }
-                return null;
-              },
-              maxLines: 3,
-            ),
-          ],
+            ],
+          ),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pop(context);
+            },
             child: const Text('Cancelar'),
           ),
           ValueListenableBuilder(
@@ -217,10 +222,11 @@ class _OccurrenceListPageState extends State<OccurrenceListPage>
                     value.text.trim().isEmpty || value.text.trim().length < 3
                     ? null
                     : () {
+                        final reason = reasonController.text.trim();
                         Modular.to.pop();
                         widget.controller.cancelOccurrence(
                           occurrenceId: occurrence.id,
-                          cancelReason: reasonController.text.trim(),
+                          cancelReason: reason,
                         );
                       },
                 child: const Text('Confirmar'),
@@ -242,6 +248,7 @@ class _OccurrenceListPageState extends State<OccurrenceListPage>
     widget.resolveOccurrenceCommand.removeListener(
       _onResolveOccurrenceStateChange,
     );
+    reasonController.dispose();
     super.dispose();
   }
 
