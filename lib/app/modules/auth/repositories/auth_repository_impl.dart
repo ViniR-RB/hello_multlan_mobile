@@ -109,6 +109,19 @@ class AuthRepositoryImpl implements AuthRepository {
         DioException(
           response: Response(
             statusCode: 400,
+            data: {"message": "User is not authorized"},
+          ),
+        ) =>
+          Failure(
+            AuthRepositoryException(
+              "unauthorized",
+              e.toString(),
+              e.stackTrace,
+            ),
+          ),
+        DioException(
+          response: Response(
+            statusCode: 400,
           ),
         ) =>
           Failure(
