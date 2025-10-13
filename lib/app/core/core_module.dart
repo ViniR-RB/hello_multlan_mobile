@@ -1,4 +1,3 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hello_multlan/app/core/data/image_picker/image_picker_service.dart';
@@ -35,7 +34,6 @@ class CoreModule extends Module {
       ),
     );
     i.addLazySingleton<ImagePickerService>(ImagePickerServiceImpl.new);
-    i.addInstance<FirebaseMessaging>(FirebaseMessaging.instance);
     i.addLazySingleton<NavigationService>(NavigationServiceImpl.new);
     i.addLazySingleton<PushNotification>(PushNotificationImpl.new);
     i.addLazySingleton<LocalNotification>(LocalNotificationImpl.new);

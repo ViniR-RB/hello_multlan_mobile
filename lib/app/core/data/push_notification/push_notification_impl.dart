@@ -8,19 +8,17 @@ import 'package:hello_multlan/app/core/data/navigation/navigation_service.dart';
 import 'package:hello_multlan/app/core/data/push_notification/push_notification.dart';
 
 class PushNotificationImpl implements PushNotification {
-  final FirebaseMessaging _messaging;
+  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   final LocalNotification _localNotifications;
   final ILocalStorageService _localStorageService;
   final NavigationService _navigationService;
 
   PushNotificationImpl({
-    required FirebaseMessaging messaging,
     required LocalNotification localNotifications,
     required ILocalStorageService localStorageService,
     required NavigationService navigationService,
   }) : _localNotifications = localNotifications,
        _localStorageService = localStorageService,
-       _messaging = messaging,
        _navigationService = navigationService;
 
   @override
