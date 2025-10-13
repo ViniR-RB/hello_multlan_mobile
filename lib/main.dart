@@ -17,12 +17,10 @@ Future<void> main() async {
     () async {
       WidgetsFlutterBinding.ensureInitialized();
 
-      // Inicializar Firebase primeiro
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
 
-      // Registrar o background handler APÓS inicializar o Firebase
       FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
       runApp(ModularApp(module: AppModule(), child: const AppWidget()));

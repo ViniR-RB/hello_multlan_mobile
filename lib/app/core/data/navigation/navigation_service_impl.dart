@@ -6,11 +6,11 @@ import 'package:hello_multlan/app/core/data/navigation/navigation_service.dart';
 import 'package:hello_multlan/app/core/either/either.dart';
 import 'package:hello_multlan/app/core/exceptions/app_exception.dart';
 import 'package:hello_multlan/app/core/extensions/async_result_extension.dart';
+import 'package:hello_multlan/app/core/navigation/global_keys.dart';
 import 'package:hello_multlan/app/modules/auth/repositories/auth_repository.dart';
 
 class NavigationServiceImpl implements NavigationService {
-  static final GlobalKey<NavigatorState> navigatorKey =
-      GlobalKey<NavigatorState>();
+  static GlobalKey<NavigatorState> get navigatorKey => GlobalKeys.navigatorKey;
 
   final AuthRepository _authRepository;
 

@@ -2,10 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:hello_multlan/app/core/navigation/global_keys.dart';
 
 class GlobalErrorHandler {
-  static final GlobalKey<NavigatorState> navigatorKey =
-      GlobalKey<NavigatorState>();
+  static GlobalKey<NavigatorState> get navigatorKey => GlobalKeys.navigatorKey;
 
   static void initialize() {
     // Captura erros do Flutter framework
