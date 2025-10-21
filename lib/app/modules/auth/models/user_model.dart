@@ -5,10 +5,11 @@ import 'package:json_annotation/json_annotation.dart';
 part 'user_model.g.dart';
 
 enum Role {
-  // ignore: constant_identifier_names
-  INTERNAL,
-  // ignore: constant_identifier_names
-  EXTERNAL,
+  internal("INTERNAL"),
+  admin("ADMIN");
+
+  final String value;
+  const Role(this.value);
 }
 
 @JsonSerializable()
@@ -17,7 +18,7 @@ class UserModel {
   final String name;
   final String email;
 
-  @JsonKey(unknownEnumValue: Role.INTERNAL)
+  @JsonKey(unknownEnumValue: Role.internal)
   final Role role;
 
   final bool isActive;

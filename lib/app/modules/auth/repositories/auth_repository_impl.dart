@@ -7,6 +7,7 @@ import 'package:hello_multlan/app/core/either/unit.dart';
 import 'package:hello_multlan/app/core/exceptions/app_exception.dart';
 import 'package:hello_multlan/app/core/extensions/async_result_extension.dart';
 import 'package:hello_multlan/app/modules/auth/dtos/credentials.dart';
+import 'package:hello_multlan/app/modules/auth/dtos/reset_password_dto.dart';
 import 'package:hello_multlan/app/modules/auth/exceptions/auth_repository_exception.dart';
 import 'package:hello_multlan/app/modules/auth/gateway/auth_gateway.dart';
 import 'package:hello_multlan/app/modules/auth/models/user_model.dart';
@@ -162,6 +163,52 @@ class AuthRepositoryImpl implements AuthRepository {
       return Success(unit);
     } on LocalStorageException catch (e) {
       throw AuthRepositoryException(e.code, e.message, e.stackTrace);
+    }
+  }
+
+  @override
+  AsyncResult<AppException, Unit> resetPassword(ResetPasswordDto dto) async {
+    try {
+      await _authGateway.resetPassword(
+        oldPassword: dto.oldPassword,
+        newPassword: dto.newPassword,
+      );
+
+      return Success(unit);
+    } on DioException catch (e) {
+      return switch (e) {
+        DioException(
+          response: Response(
+            statusCode: 400,
+          ),
+        ) =>
+          Failure(
+            AuthRepositoryException(
+              "invalidOldPassword",
+              e.toString(),
+              e.stackTrace,
+            ),
+          ),
+        DioException(
+          response: Response(
+            statusCode: 401,
+          ),
+        ) =>
+          Failure(
+            AuthRepositoryException(
+              "unauthorized",
+              e.toString(),
+              e.stackTrace,
+            ),
+          ),
+        _ => Failure(
+          AuthRepositoryException(
+            "unkownError",
+            e.toString(),
+            e.stackTrace,
+          ),
+        ),
+      };
     }
   }
 }

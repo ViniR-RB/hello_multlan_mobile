@@ -33,4 +33,13 @@ abstract class AuthGateway {
   Future<UserModel> updateFcmToken({
     @Field('fcmToken') required String fcmToken,
   });
+
+  @POST("/api/users/reset-password")
+  @Headers(<String, dynamic>{
+    'DIO_AUTH_KEY': true,
+  })
+  Future<void> resetPassword({
+    @Field('oldPassword') required String oldPassword,
+    @Field('newPassword') required String newPassword,
+  });
 }

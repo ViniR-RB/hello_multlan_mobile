@@ -56,6 +56,13 @@ class _BoxHubPageState extends State<BoxHubPage> with LoaderMessageMixin {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             MenuOptionCard(
+              icon: Icons.person_outline,
+              title: "Perfil",
+              subtitle: "Visualizar e editar perfil",
+              iconColor: Colors.green,
+              onTap: () => Modular.to.pushNamed("/auth/profile"),
+            ),
+            MenuOptionCard(
               icon: Icons.map_outlined,
               title: "Mapa",
               subtitle: "Visualizar mapa",

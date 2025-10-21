@@ -49,5 +49,6 @@ class AppModule extends Module {
     );
     r.module("/box", module: BoxModule());
     r.module("/occurrence", module: OccurrenceModule());
+    r.module("/auth", module: AuthModule());
   }
 }
