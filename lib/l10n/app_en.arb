@@ -15,8 +15,10 @@
   "photoAccessDenied": "Adjust cell phone gallery access permissions to continue",
   "timeout": "Time Exceeded in this operation",
   "successInCreateBox": "Create Box Successfully",
+  "successInUpdateBox": "Update Box Successfully",
   "noteMinLength": "Note must be at least 3 characters long",
   "filledSpaceGreaterThanFreeSpace": "Filled space not greater than free space",
   "fieldRequired": "Field is required",
-  "mapNotLoading": "We are having trouble loading the map, try recently later"
+  "mapNotLoading": "We are having trouble loading the map, try recently later",
+  "passwordResetSuccess": "Password has altered successfully"
 }

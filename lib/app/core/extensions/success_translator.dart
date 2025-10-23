@@ -9,6 +9,8 @@ mixin SuccessTranslator<T extends StatefulWidget> on State<T> {
         return l10n.successInLogin;
       case "successInCreateBox":
         return l10n.successInCreateBox;
+      case "passwordResetSuccess":
+        return l10n.passwordResetSuccess;
       default:
         return l10n.unknownError;
     }

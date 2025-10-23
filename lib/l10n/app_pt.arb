@@ -15,9 +15,11 @@
   "photoAccessDenied": "Ajuste as permissoes de acesso a galeria do celular para continuar",
   "timeout": "Tempo excedido nessa operação",
   "successInCreateBox": "Criação da Caixa foi um sucesso",
+  "successInUpdateBox": "Atualização da Caixa foi um sucesso",
   "noteMinLength": "A anotação deve ter pelo menos 3 caracteres",
   "filledSpaceGreaterThanFreeSpace": "Quantidade do espaco preenchido nao pode ser maio que a quantidade de espaço livre",
   "fieldRequired": "Campo é requerido",
-  "mapNotLoading": "Estamos com problema de carregar o mapa, tente recentemente mais tarde"
+  "mapNotLoading": "Estamos com problema de carregar o mapa, tente recentemente mais tarde",
+  "passwordResetSuccess": "Senha alterada com sucesso"
   
 }
