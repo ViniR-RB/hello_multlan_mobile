@@ -37,10 +37,9 @@ void main() {
         latitude: '10.0',
         longitude: '20.0',
         freeSpace: 5,
-        filledSpace: 2,
         signal: 2,
         note: 'Valid note',
-        zone: 'A',
+        zone: 'SAFE',
         listUser: ['user1'],
         image: File("path"),
       );
@@ -55,10 +54,9 @@ void main() {
         latitude: '10.0',
         longitude: '20.0',
         freeSpace: 5,
-        filledSpace: 2,
         signal: 2,
         note: 'Valid note',
-        zone: 'A',
+        zone: 'SAFE',
         listUser: [],
         image: File("path"),
       );
@@ -68,40 +66,41 @@ void main() {
       expect(result.exceptions, isEmpty);
     });
     test(
-      'should fail when any user in listUser has less than 3 characters',
+      'should fail when any user in listUser has less than 4 characters',
       () {
         final dto = CreateBoxDto(
           label: 'Label',
           latitude: '10.0',
           longitude: '20.0',
           freeSpace: 5,
-          filledSpace: 2,
           signal: 2,
           note: 'Valid note',
-          zone: 'A',
-          listUser: ['ab', 'user2'], // 'ab' tem menos de 3 caracteres
+          zone: 'SAFE',
+          listUser: [
+            'abc',
+            'user2',
+          ], // 'abc' tem apenas 3 caracteres (menos que 4)
           image: File("path"),
         );
 
         final result = validator.validate(dto);
         expect(result.isValid, isFalse);
-        expect(result.exceptions.any((e) => e.code == 'fieldRequired'), isTrue);
+        expect(result.exceptions.any((e) => e.key == 'simpleUser'), isTrue);
       },
     );
 
     test(
-      'should pass when all users in listUser have at least 3 characters',
+      'should pass when all users in listUser have at least 4 characters',
       () {
         final dto = CreateBoxDto(
           label: 'Label',
           latitude: '10.0',
           longitude: '20.0',
           freeSpace: 5,
-          filledSpace: 2,
           signal: 2,
           note: 'Valid note',
-          zone: 'A',
-          listUser: ['abc', 'user2'],
+          zone: 'SAFE',
+          listUser: ['user1', 'user2'], // ambos têm 5 caracteres (>= 4)
           image: File("path"),
         );
 

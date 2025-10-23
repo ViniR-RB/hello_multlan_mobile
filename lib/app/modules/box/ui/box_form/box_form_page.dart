@@ -47,24 +47,6 @@ class _BoxFormPageState extends State<BoxFormPage>
     _boxDto.addUserForListByIndex("", _boxDto.listUser.length);
   }
 
-  _adjustUserListSize(int targetSize) {
-    final currentSize = _boxDto.listUser.length;
-
-    // Limita o targetSize ao valor máximo de freeSpace
-    final maxAllowed = _boxDto.freeSpace > 0 ? _boxDto.freeSpace : 0;
-    final limitedTargetSize = targetSize > maxAllowed ? maxAllowed : targetSize;
-
-    if (limitedTargetSize > currentSize) {
-      for (int i = currentSize; i < limitedTargetSize; i++) {
-        _boxDto.addUserForListByIndex("", i);
-      }
-    } else if (limitedTargetSize < currentSize) {
-      for (int i = currentSize - 1; i >= limitedTargetSize; i--) {
-        _boxDto.removeUserForListByIndex(i);
-      }
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -281,10 +263,23 @@ class _BoxFormPageState extends State<BoxFormPage>
     final invalidFields = Set.from(formException.exceptions.map((e) => e.key));
 
     log("$invalidFields");
+
+    final simpleUserExceptions = _validator.getExceptionsByKey(
+      _boxDto,
+      "listUser",
+    );
+
+    log("simpleUserExceptions: $simpleUserExceptions");
+
+    if (simpleUserExceptions.isNotEmpty) {
+      return false;
+    }
+
     if (invalidFields.length == 2 &&
         invalidFields.containsAll(["latitude", "longitude"])) {
       return true;
     }
+
     return false;
   }
 
@@ -465,79 +460,19 @@ class _BoxFormPageState extends State<BoxFormPage>
                           validator: _validator.byField(_boxDto, "label"),
                         ),
 
-                        LayoutBuilder(
-                          builder: (context, constraints) {
-                            final fieldWidth = constraints.maxWidth > 600
-                                ? MediaQuery.of(context).size.width * 0.45
-                                : MediaQuery.of(context).size.width;
-                            return Wrap(
-                              alignment: WrapAlignment.center,
-                              crossAxisAlignment: WrapCrossAlignment.start,
-                              runSpacing: 16,
-                              spacing: 16,
-                              children: [
-                                SizedBox(
-                                  width: fieldWidth,
-                                  child: TextFormField(
-                                    textInputAction: TextInputAction.next,
-                                    keyboardType: TextInputType.number,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Total de Clientes',
-                                      prefixIcon: Icon(Icons.space_bar),
-                                    ),
-                                    validator: _validator.byField(
-                                      _boxDto,
-                                      "freeSpace",
-                                    ),
-                                    onChanged: (value) => _boxDto.setFreeSpace =
-                                        int.tryParse(value) ?? 0,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: fieldWidth,
-                                  child: TextFormField(
-                                    textInputAction: TextInputAction.next,
-                                    keyboardType: TextInputType.number,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Clientes Ativos',
-                                      prefixIcon: Icon(Icons.people),
-                                    ),
-                                    validator: (String? value) {
-                                      final getExceptionTranslate = _validator
-                                          .getExceptions(_boxDto)
-                                          .any(
-                                            (exception) =>
-                                                exception.message ==
-                                                "filledSpaceGreaterThanFreeSpace",
-                                          );
-
-                                      if (getExceptionTranslate == true) {
-                                        return translateError(
-                                          context,
-                                          "filledSpaceGreaterThanFreeSpace",
-                                        );
-                                      } else {
-                                        return _validator.byField(
-                                          _boxDto,
-                                          "filledSpace",
-                                        )(
-                                          value,
-                                        );
-                                      }
-                                    },
-                                    onChanged: (value) {
-                                      final filledSpace =
-                                          int.tryParse(value) ?? 0;
-                                      _boxDto.setFilledSpace = filledSpace;
-
-                                      // Ajusta a lista de usuários baseada no filledSpace
-                                      _adjustUserListSize(filledSpace);
-                                    },
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
+                        TextFormField(
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            labelText: 'Total de Clientes',
+                            prefixIcon: Icon(Icons.space_bar),
+                          ),
+                          validator: _validator.byField(
+                            _boxDto,
+                            "freeSpace",
+                          ),
+                          onChanged: (value) =>
+                              _boxDto.setFreeSpace = int.tryParse(value) ?? 0,
                         ),
 
                         TextFormField(
@@ -788,8 +723,7 @@ class _BoxFormPageState extends State<BoxFormPage>
                               listenable: _boxDto,
                               builder: (context, child) {
                                 final canAddUser =
-                                    _boxDto.listUser.length <
-                                    _boxDto.filledSpace;
+                                    _boxDto.listUser.length < _boxDto.freeSpace;
 
                                 return TextButton(
                                   onPressed: canAddUser
@@ -841,8 +775,9 @@ class _BoxFormPageState extends State<BoxFormPage>
                                     validator: (String? value) {
                                       final message = _validator.byField(
                                         _boxDto,
-                                        "listUser",
+                                        "listUser.simpleUser",
                                       )(value);
+
                                       if (message == null) return null;
                                       if (message == "fieldRequired") {
                                         return translateError(

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -10,7 +11,6 @@ class CreateBoxDto extends ChangeNotifier {
   String latitude;
   String longitude;
   int freeSpace;
-  int filledSpace;
   num signal;
   List<String> listUser;
   String gpsMode;
@@ -19,12 +19,14 @@ class CreateBoxDto extends ChangeNotifier {
   String zone;
   File? image;
 
+  // filledSpace agora é um getter que retorna o tamanho de listUser
+  int get filledSpace => listUser.length;
+
   CreateBoxDto({
     this.label = "",
     this.latitude = "",
     this.longitude = "",
     this.freeSpace = 0,
-    this.filledSpace = 0,
     this.signal = 0.0,
     this.gpsMode = "PHONE",
     this.address = "",
@@ -51,11 +53,6 @@ class CreateBoxDto extends ChangeNotifier {
 
   set setFreeSpace(int value) {
     freeSpace = value;
-    notifyListeners();
-  }
-
-  set setFilledSpace(int value) {
-    filledSpace = value;
     notifyListeners();
   }
 
@@ -101,6 +98,7 @@ class CreateBoxDto extends ChangeNotifier {
 
   void addUserForListValue(String value, int index) {
     listUser[index] = value;
+    notifyListeners();
   }
 
   void removeUserForListByIndex(int index) {
@@ -123,7 +121,6 @@ class CreateBoxDto extends ChangeNotifier {
     latitude = "";
     longitude = "";
     freeSpace = 0;
-    filledSpace = 0;
     signal = 0.0;
     note = "";
     zone = "";
@@ -142,7 +139,7 @@ class CreateBoxDto extends ChangeNotifier {
       'signal': signal,
       'note': note,
       'zone': zone,
-      'listUser': listUser,
+      'listUser': jsonEncode(listUser),
       'file': MultipartFile.fromFileSync(
         image!.path,
         filename: image!.uri.toString(),
@@ -156,7 +153,6 @@ class CreateBoxDto extends ChangeNotifier {
       latitude: json['latitude'] ?? "",
       longitude: json['longitude'] ?? "",
       freeSpace: json['freeSpace'] ?? 0,
-      filledSpace: json['filledSpace'] ?? 0,
       signal: json['signal'] ?? 0.0,
       note: json['note'] ?? "",
       zone: json['zone'] ?? "",
@@ -176,13 +172,11 @@ class CreateBoxDtoValidator extends LucidValidator<CreateBoxDto> {
     ruleFor((box) => box.latitude, key: "latitude").notEmpty();
     ruleFor((box) => box.latitude, key: "longitude").notEmpty();
     ruleFor((box) => box.freeSpace, key: "freeSpace").greaterThan(1);
-    ruleFor((box) => box.filledSpace, key: "filledSpace")
-        .greaterThan(0)
-        .mustWith(
-          (filled, box) => filled <= box.freeSpace,
-          "filledSpaceGreaterThanFreeSpace",
-          "filledSpaceGreaterThanFreeSpace",
-        );
+    ruleFor((box) => box.filledSpace, key: "filledSpace").mustWith(
+      (filled, box) => filled <= box.freeSpace,
+      "filledSpaceGreaterThanFreeSpace",
+      "filledSpaceGreaterThanFreeSpace",
+    );
 
     ruleFor((box) => box.note, key: "note").mustWith(
       (note, box) => note.isEmpty || note.length > 3,
@@ -212,24 +206,17 @@ class CreateBoxDtoValidator extends LucidValidator<CreateBoxDto> {
 
     ruleFor((box) => box.image, key: "image").isNotNull();
     ruleFor(
-          (box) => box.listUser,
-          key: "listUser",
-        )
-        .mustWith(
-          (listUser, box) => listUser.length == box.filledSpace,
-          "listUserMustMatchFilledSpace",
-          "listUserMustMatchFilledSpace",
-        )
-        .setEach(SimpleUserValidator());
+      (box) => box.listUser,
+      key: "listUser",
+    ).setEach(SimpleUserValidator());
   }
 }
 
 class SimpleUserValidator extends LucidValidator<String> {
   SimpleUserValidator() {
-    ruleFor((value) => value, key: "simpleUser").must(
-      (String value) => value.isNotEmpty && value.length > 3,
-      "fieldRequired",
-      "fieldRequired",
-    );
+    ruleFor(
+      (value) => value,
+      key: "simpleUser",
+    ).notEmpty().minLength(4); // maior que 3 caracteres significa mínimo de 4
   }
 }
