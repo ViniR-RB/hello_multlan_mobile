@@ -8,6 +8,7 @@ import 'package:hello_multlan/app/core/either/unit.dart';
 import 'package:hello_multlan/app/core/exceptions/app_exception.dart';
 import 'package:hello_multlan/app/core/extensions/async_result_extension.dart';
 import 'package:hello_multlan/app/modules/box/dto/create_box_dto.dart';
+import 'package:hello_multlan/app/modules/box/dto/edit_box_dto.dart';
 import 'package:hello_multlan/app/modules/box/exceptions/box_repository_exception.dart';
 import 'package:hello_multlan/app/modules/box/gateway/box_gateway.dart';
 import 'package:hello_multlan/app/modules/box/repositories/box_repository.dart';
@@ -66,6 +67,21 @@ class BoxRepositoryImpl implements BoxRepository {
       return Success(unit);
     } on DioException catch (e, s) {
       log("Erro em criar box", error: e, stackTrace: s);
+      return Failure(BoxRepositoryException("unkownError", e.toString(), s));
+    }
+  }
+
+  @override
+  AsyncResult<AppException, Unit> updateBox(EditBoxDto box) async {
+    try {
+      await _gateway.updateBox(
+        box.id,
+        box.toJson(),
+      );
+
+      return Success(unit);
+    } on DioException catch (e, s) {
+      log("Erro em atualizar box", error: e, stackTrace: s);
       return Failure(BoxRepositoryException("unkownError", e.toString(), s));
     }
   }

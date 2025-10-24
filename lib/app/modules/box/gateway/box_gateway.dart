@@ -48,4 +48,13 @@ abstract class BoxGateway {
   Future<BoxModel> getBoxById(
     @Path("id") String id,
   );
+
+  @PUT("/api/box/{id}")
+  @Headers(<String, dynamic>{
+    'DIO_AUTH_KEY': true,
+  })
+  Future<void> updateBox(
+    @Path("id") String id,
+    @Body() Map<String, dynamic> data,
+  );
 }

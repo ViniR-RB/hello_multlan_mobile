@@ -5,6 +5,10 @@ import 'package:hello_multlan/app/modules/auth/auth_module.dart';
 import 'package:hello_multlan/app/modules/box/gateway/box_gateway.dart';
 import 'package:hello_multlan/app/modules/box/repositories/box_repository.dart';
 import 'package:hello_multlan/app/modules/box/repositories/box_repository_impl.dart';
+import 'package:hello_multlan/app/modules/box/ui/box_edit/box_edit_controller.dart';
+import 'package:hello_multlan/app/modules/box/ui/box_edit/box_edit_page.dart';
+import 'package:hello_multlan/app/modules/box/ui/box_edit/commands/get_box_by_id_for_edit_command.dart';
+import 'package:hello_multlan/app/modules/box/ui/box_edit/commands/update_box_data_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_form/box_form_controller.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_form/box_form_page.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_form/commands/create_box_data_command.dart';
@@ -40,7 +44,9 @@ class BoxModule extends Module {
     i.add(GetUserLocationSendFormCommand.new);
     i.add(GetUserLocationByAddressCommand.new);
     i.add(CreateBoxDataCommand.new);
+    i.add(UpdateBoxDataCommand.new);
     i.add(GetBoxByIdCommand.new);
+    i.add(GetBoxByIdForEditCommand.new);
     i.add(LogoutCommand.new);
   }
 
@@ -102,6 +108,28 @@ class BoxModule extends Module {
           controller: controller,
           getBoxesByFiltersCommand: getBoxesByFiltersCommand,
           watchUserPositionCommand: watchUserPositionCommand,
+        );
+      },
+    );
+    r.child(
+      "/edit/:id",
+      child: (_) {
+        final boxId = r.args.params['id'] as String;
+
+        final getBoxByIdForEditCommand =
+            Modular.get<GetBoxByIdForEditCommand>();
+        final updateBoxDataCommand = Modular.get<UpdateBoxDataCommand>();
+
+        final controller = BoxEditController(
+          updateBoxCommand: updateBoxDataCommand,
+          getBoxByIdForEditCommand: getBoxByIdForEditCommand,
+        );
+
+        return BoxEditPage(
+          controller: controller,
+          boxId: boxId,
+          getBoxByIdForEditCommand: getBoxByIdForEditCommand,
+          updateBoxDataCommand: updateBoxDataCommand,
         );
       },
     );
