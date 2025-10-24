@@ -217,10 +217,13 @@ class _BoxDetailBottomSheetWidgetState
         Padding(
           padding: const EdgeInsets.all(24),
           child: ElevatedButton(
-            onPressed: () => Modular.to.pushNamed(
-              "/box/edit",
-              arguments: box,
-            ),
+            onPressed: () => {
+              Modular.to.pop(),
+              Modular.to.pushNamed(
+                "/box/edit/${box.id}",
+                arguments: box,
+              ),
+            },
             style: ElevatedButton.styleFrom(
               minimumSize: const Size(double.infinity, 50),
               shape: RoundedRectangleBorder(
