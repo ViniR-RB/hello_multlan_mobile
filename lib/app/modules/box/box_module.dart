@@ -2,12 +2,12 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:hello_multlan/app/core/core_module.dart';
 import 'package:hello_multlan/app/core/data/rest_client/rest_client.dart';
 import 'package:hello_multlan/app/modules/auth/auth_module.dart';
+import 'package:hello_multlan/app/modules/box/commands/get_box_by_id_command.dart';
 import 'package:hello_multlan/app/modules/box/gateway/box_gateway.dart';
 import 'package:hello_multlan/app/modules/box/repositories/box_repository.dart';
 import 'package:hello_multlan/app/modules/box/repositories/box_repository_impl.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_edit/box_edit_controller.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_edit/box_edit_page.dart';
-import 'package:hello_multlan/app/modules/box/ui/box_edit/commands/get_box_by_id_for_edit_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_edit/commands/update_box_data_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_form/box_form_controller.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_form/box_form_page.dart';
@@ -22,7 +22,6 @@ import 'package:hello_multlan/app/modules/box/ui/box_map/box_map_controller.dart
 import 'package:hello_multlan/app/modules/box/ui/box_map/box_map_page.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/command/get_boxes_by_filters_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/command/watch_user_position_command.dart';
-import 'package:hello_multlan/app/modules/box/ui/box_map_detail/commands/get_box_by_id_command.dart';
 import 'package:hello_multlan/app/modules/geo_locator/geo_locator_module.dart';
 
 class BoxModule extends Module {
@@ -46,7 +45,6 @@ class BoxModule extends Module {
     i.add(CreateBoxDataCommand.new);
     i.add(UpdateBoxDataCommand.new);
     i.add(GetBoxByIdCommand.new);
-    i.add(GetBoxByIdForEditCommand.new);
     i.add(LogoutCommand.new);
   }
 
@@ -116,19 +114,18 @@ class BoxModule extends Module {
       child: (_) {
         final boxId = r.args.params['id'] as String;
 
-        final getBoxByIdForEditCommand =
-            Modular.get<GetBoxByIdForEditCommand>();
+        final getBoxByIdCommand = Modular.get<GetBoxByIdCommand>();
         final updateBoxDataCommand = Modular.get<UpdateBoxDataCommand>();
 
         final controller = BoxEditController(
           updateBoxCommand: updateBoxDataCommand,
-          getBoxByIdForEditCommand: getBoxByIdForEditCommand,
+          getBoxByIdCommand: getBoxByIdCommand,
         );
 
         return BoxEditPage(
           controller: controller,
           boxId: boxId,
-          getBoxByIdForEditCommand: getBoxByIdForEditCommand,
+          getBoxByIdCommand: getBoxByIdCommand,
           updateBoxDataCommand: updateBoxDataCommand,
         );
       },

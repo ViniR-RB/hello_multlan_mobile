@@ -6,16 +6,19 @@ import 'package:hello_multlan/app/modules/box/repositories/models/box_model.dart
 
 class GetBoxByIdCommand extends BaseCommand<BoxModel?, AppException> {
   final BoxRepository _boxRepository;
+
   GetBoxByIdCommand({required BoxRepository boxRepository})
     : _boxRepository = boxRepository,
       super(CommandInitial(null));
 
   Future<void> execute(String id) async {
     setState(CommandLoading());
-    final result = await _boxRepository.getBoxById(id);
-    result.when(
+
+    final getBoxResult = await _boxRepository.getBoxById(id);
+
+    getBoxResult.when(
+      onSuccess: (box) => setState(CommandSuccess(box)),
       onFailure: (error) => setState(CommandFailure(error)),
-      onSuccess: (data) => setState(CommandSuccess(data)),
     );
   }
 

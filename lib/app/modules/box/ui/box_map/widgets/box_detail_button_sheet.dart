@@ -5,10 +5,10 @@ import 'package:hello_multlan/app/core/config/env.dart';
 import 'package:hello_multlan/app/core/extensions/number_pad.dart';
 import 'package:hello_multlan/app/core/extensions/timeago.dart';
 import 'package:hello_multlan/app/core/states/command_state.dart';
+import 'package:hello_multlan/app/modules/box/commands/get_box_by_id_command.dart';
 import 'package:hello_multlan/app/modules/box/repositories/models/box_model.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/widgets/box_field_detail.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map_detail/box_map_detail_controller.dart';
-import 'package:hello_multlan/app/modules/box/ui/box_map_detail/commands/get_box_by_id_command.dart';
 import 'package:hello_multlan/gen/assets.gen.dart';
 
 sealed class BoxDetailsBottomSheet {

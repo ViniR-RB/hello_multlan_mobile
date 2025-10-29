@@ -7,23 +7,23 @@ import 'package:hello_multlan/app/core/extensions/success_translator.dart';
 import 'package:hello_multlan/app/core/states/command_state.dart';
 import 'package:hello_multlan/app/core/widgets/custom_app_bar_sliver.dart';
 import 'package:hello_multlan/app/core/widgets/custom_scaffold_foreground.dart';
+import 'package:hello_multlan/app/modules/box/commands/get_box_by_id_command.dart';
 import 'package:hello_multlan/app/modules/box/dto/edit_box_dto.dart';
 import 'package:hello_multlan/app/modules/box/repositories/models/box_zone_enum.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_edit/box_edit_controller.dart';
-import 'package:hello_multlan/app/modules/box/ui/box_edit/commands/get_box_by_id_for_edit_command.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_edit/commands/update_box_data_command.dart';
 
 class BoxEditPage extends StatefulWidget {
   final BoxEditController controller;
   final String boxId;
-  final GetBoxByIdForEditCommand getBoxByIdForEditCommand;
+  final GetBoxByIdCommand getBoxByIdCommand;
   final UpdateBoxDataCommand updateBoxDataCommand;
 
   const BoxEditPage({
     super.key,
     required this.controller,
     required this.boxId,
-    required this.getBoxByIdForEditCommand,
+    required this.getBoxByIdCommand,
     required this.updateBoxDataCommand,
   });
 
@@ -47,7 +47,7 @@ class _BoxEditPageState extends State<BoxEditPage>
   void initState() {
     super.initState();
     _boxDto = EditBoxDto(id: widget.boxId);
-    widget.getBoxByIdForEditCommand.addListener(_listenerGetBoxById);
+    widget.getBoxByIdCommand.addListener(_listenerGetBoxById);
     widget.updateBoxDataCommand.addListener(_listenerUpdateBox);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -56,7 +56,7 @@ class _BoxEditPageState extends State<BoxEditPage>
   }
 
   void _listenerGetBoxById() {
-    final state = widget.getBoxByIdForEditCommand.state;
+    final state = widget.getBoxByIdCommand.state;
 
     switch (state) {
       case CommandSuccess(value: final box):
@@ -109,7 +109,7 @@ class _BoxEditPageState extends State<BoxEditPage>
   @override
   void dispose() {
     widget.updateBoxDataCommand.removeListener(_listenerUpdateBox);
-    widget.getBoxByIdForEditCommand.removeListener(_listenerGetBoxById);
+    widget.getBoxByIdCommand.removeListener(_listenerGetBoxById);
     widget.controller.dispose();
     super.dispose();
   }
