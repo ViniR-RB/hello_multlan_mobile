@@ -6,6 +6,7 @@ import 'package:hello_multlan/app/core/extensions/error_translator.dart';
 import 'package:hello_multlan/app/core/extensions/loader_message.dart';
 import 'package:hello_multlan/app/core/extensions/theme_extension.dart';
 import 'package:hello_multlan/app/core/states/command_state.dart';
+import 'package:hello_multlan/app/modules/box/commands/get_box_by_id_command.dart';
 import 'package:hello_multlan/app/modules/box/repositories/models/box_zone_enum.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/box_map_controller.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/command/get_boxes_by_filters_command.dart';
@@ -19,11 +20,13 @@ class BoxMapPage extends StatefulWidget {
   final BoxMapController controller;
   final GetBoxesByFiltersCommand getBoxesByFiltersCommand;
   final WatchUserPositionCommand watchUserPositionCommand;
+  final String? boxId;
   const BoxMapPage({
     super.key,
     required this.controller,
     required this.getBoxesByFiltersCommand,
     required this.watchUserPositionCommand,
+    this.boxId,
   });
 
   @override
@@ -32,22 +35,82 @@ class BoxMapPage extends StatefulWidget {
 
 class _BoxMapPageState extends State<BoxMapPage>
     with ErrorTranslator, LoaderMessageMixin {
+  late final GetBoxByIdCommand _getBoxByIdCommand;
+
   @override
   void initState() {
+    _getBoxByIdCommand = widget.controller.getBoxByIdCommand;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.controller.watchUserPosition();
       widget.controller.startListeningCameraChanges();
       widget.controller.fetchInitialBoxes();
       widget.watchUserPositionCommand.addListener(_listerUserPosition);
       widget.getBoxesByFiltersCommand.addListener(_getBoxesByFiltersListener);
+      _getBoxByIdCommand.addListener(_getBoxByIdListener);
+
+      // Se tem boxId, buscar e navegar para a box
+      if (widget.boxId != null) {
+        _handleBoxIdNavigation(widget.boxId!);
+      }
     });
     super.initState();
   }
 
   @override
+  void didUpdateWidget(BoxMapPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Se o boxId mudou, navegar para a nova box
+    if (widget.boxId != null && widget.boxId != oldWidget.boxId) {
+      _handleBoxIdNavigation(widget.boxId!);
+    }
+  }
+
+  @override
   void dispose() {
+    _getBoxByIdCommand.removeListener(_getBoxByIdListener);
     widget.controller.dispose();
     super.dispose();
+  }
+
+  void _handleBoxIdNavigation(String boxId) async {
+    await widget.controller.fetchBoxById(boxId);
+  }
+
+  void _getBoxByIdListener() {
+    switch (_getBoxByIdCommand.state) {
+      case CommandSuccess(value: final box):
+        if (box != null) {
+          // Navegar para as coordenadas da box
+          widget.controller.navigateToBoxCoordinates(
+            box.latitude.toDouble(),
+            box.longitude.toDouble(),
+          );
+
+          // Abrir o bottom sheet com os detalhes da box
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            BoxDetailsBottomSheet.showBottomSheetBoxById(
+              box.id,
+              context,
+            );
+          });
+        } else {
+          notifier.showMessage(
+            'Box não encontrada',
+            SnackType.error,
+          );
+        }
+        break;
+      case CommandFailure(exception: final exception):
+        notifier.showMessage(
+          translateError(context, exception.code),
+          SnackType.error,
+        );
+        break;
+      case CommandLoading() || CommandInitial():
+        break;
+    }
   }
 
   _listerUserPosition() {

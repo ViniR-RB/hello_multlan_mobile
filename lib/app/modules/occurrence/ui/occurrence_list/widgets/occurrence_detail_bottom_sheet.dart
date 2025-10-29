@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:hello_multlan/app/core/extensions/theme_extension.dart';
 import 'package:hello_multlan/app/core/extensions/timeago.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/widgets/box_detail_button_sheet.dart';
@@ -181,34 +182,13 @@ class OccurrenceDetailBottomSheet extends StatelessWidget {
                           ),
                         ),
                         child: Row(
+                          spacing: 12,
                           children: [
                             Icon(
                               Icons.inventory_2,
                               color: colors.primaryColor,
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Box ID',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                  Text(
-                                    '${occurrence.boxId!.substring(0, 8)}...',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            Spacer(),
                             FilledButton.icon(
                               onPressed: () {
                                 Navigator.pop(context);
@@ -218,7 +198,24 @@ class OccurrenceDetailBottomSheet extends StatelessWidget {
                                 );
                               },
                               icon: const Icon(Icons.open_in_new, size: 16),
-                              label: const Text('Ver Box'),
+                              label: const Text('Ver Caixa'),
+                              style: FilledButton.styleFrom(
+                                backgroundColor: colors.primaryColor,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                              ),
+                            ),
+                            FilledButton.icon(
+                              onPressed: () {
+                                Modular.to.pushNamed(
+                                  "/box/map/${occurrence.boxId}",
+                                  arguments: occurrence.boxId,
+                                );
+                              },
+                              icon: const Icon(Icons.map, size: 16),
+                              label: const Text('Ver no Mapa'),
                               style: FilledButton.styleFrom(
                                 backgroundColor: colors.primaryColor,
                                 padding: const EdgeInsets.symmetric(

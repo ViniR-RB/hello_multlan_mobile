@@ -89,23 +89,30 @@ class BoxModule extends Module {
       },
     );
     r.child(
-      "/map",
+      "/map/:boxId?",
       child: (_) {
+        final boxId = r.args.params['boxId'] as String?;
+
         final GetBoxesByFiltersCommand getBoxesByFiltersCommand =
             Modular.get<GetBoxesByFiltersCommand>();
 
         final WatchUserPositionCommand watchUserPositionCommand =
             Modular.get<WatchUserPositionCommand>();
 
+        final GetBoxByIdCommand getBoxByIdCommand =
+            Modular.get<GetBoxByIdCommand>();
+
         final BoxMapController controller = BoxMapController(
           getBoxesByFiltersCommand: getBoxesByFiltersCommand,
           watchUserPositionCommand: watchUserPositionCommand,
+          getBoxByIdCommand: getBoxByIdCommand,
         );
 
         return BoxMapPage(
           controller: controller,
           getBoxesByFiltersCommand: getBoxesByFiltersCommand,
           watchUserPositionCommand: watchUserPositionCommand,
+          boxId: boxId,
         );
       },
     );
