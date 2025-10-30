@@ -10,12 +10,6 @@ on:
       - main
       - develop
   workflow_dispatch:
-    inputs:
-      release_notes:
-        type: string
-        required: true
-        default: 'Manual Debug Build'
-        description: 'Release Notes'
 
 env:
   FLUTTER_VERSION: "3.32.8"
@@ -98,5 +92,4 @@ jobs:
           appId: ${{ secrets.FIREBASE_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_CREDENTIALS }}
           groups: pre-testers
-          releaseNotes: ${{ inputs.release_notes }}
           file: build/app/outputs/flutter-apk/app-release.apk
