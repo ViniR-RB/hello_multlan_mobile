@@ -60,7 +60,7 @@ jobs:
       - name: Create google-services.json
         env:
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: run: echo "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+        run: echo "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
 
       - name: Create firebase_options.dart
         env:
