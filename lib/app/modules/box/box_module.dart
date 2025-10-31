@@ -119,7 +119,7 @@ class BoxModule extends Module {
     r.child(
       "/edit/:id",
       child: (_) {
-        final boxId = r.args.params['id'] as String;
+        final boxId = r.args.params['id'];
 
         final getBoxByIdCommand = Modular.get<GetBoxByIdCommand>();
         final updateBoxDataCommand = Modular.get<UpdateBoxDataCommand>();

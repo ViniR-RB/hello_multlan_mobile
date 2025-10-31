@@ -50,7 +50,7 @@ class _BoxMapPageState extends State<BoxMapPage>
       _getBoxByIdCommand.addListener(_getBoxByIdListener);
 
       // Se tem boxId, buscar e navegar para a box
-      if (widget.boxId != null) {
+      if (widget.boxId != null && widget.boxId!.isNotEmpty) {
         _handleBoxIdNavigation(widget.boxId!);
       }
     });
