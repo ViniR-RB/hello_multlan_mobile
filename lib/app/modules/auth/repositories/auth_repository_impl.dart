@@ -90,6 +90,7 @@ class AuthRepositoryImpl implements AuthRepository {
           userResultResponse.fcmToken != fcmTokenResult.getOrThrow()) {
         final userUpdated = await _authGateway.updateFcmToken(
           fcmToken: fcmTokenResult.getOrThrow(),
+          id: userResultResponse.id,
         );
 
         await _localStorageService.set(

@@ -32,6 +32,7 @@ abstract class AuthGateway {
   })
   Future<UserModel> updateFcmToken({
     @Field('fcmToken') required String fcmToken,
+    @Field('id') required int id,
   });
 
   @POST("/api/users/reset-password")
