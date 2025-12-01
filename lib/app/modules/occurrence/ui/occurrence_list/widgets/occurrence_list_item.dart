@@ -14,6 +14,7 @@ class OccurrenceListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Locale locale = Localizations.localeOf(context);
     return Card(
       elevation: 2,
       child: InkWell(
@@ -63,7 +64,9 @@ class OccurrenceListItem extends StatelessWidget {
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          occurrence.createdAt.toString().toTimeAgo(),
+                          occurrence.createdAt.toString().toTimeAgo(
+                            locale: locale,
+                          ),
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[500],
