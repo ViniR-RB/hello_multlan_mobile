@@ -31,101 +31,105 @@ class OccurrenceDetailBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colors;
-
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.8,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(20),
-        ),
-        image: DecorationImage(
-          opacity: 0.1,
-          image: Assets.images.background1.provider(),
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Column(
-        children: [
-          // Handle bar
-          Container(
-            margin: const EdgeInsets.only(top: 12),
-            height: 4,
-            width: 40,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(2),
-            ),
+    final Locale locale = Localizations.localeOf(context);
+    return DraggableScrollableSheet(
+      initialChildSize: 0.8,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      builder: (context, scrollController) => Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(20),
           ),
+          image: DecorationImage(
+            opacity: 0.1,
+            image: Assets.images.background1.provider(),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Column(
+          children: [
+            // Handle bar
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              height: 4,
+              width: 40,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
 
-          // Header
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: _getStatusColor().withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
+            // Header
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: _getStatusColor().withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      _getStatusIcon(),
+                      size: 28,
+                      color: _getStatusColor(),
+                    ),
                   ),
-                  child: Icon(
-                    _getStatusIcon(),
-                    size: 28,
-                    color: _getStatusColor(),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        occurrence.title,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          occurrence.title,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _getStatusColor().withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: _getStatusColor().withValues(alpha: 0.3),
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _getStatusColor().withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: _getStatusColor().withValues(alpha: 0.3),
+                            ),
+                          ),
+                          child: Text(
+                            _getStatusText(),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: _getStatusColor(),
+                            ),
                           ),
                         ),
-                        child: Text(
-                          _getStatusText(),
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: _getStatusColor(),
-                          ),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
-                ),
-              ],
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
             ),
-          ),
 
-          // Content
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            // Content
+            Expanded(
+              child: ListView(
+                controller: scrollController,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
                   // Descrição
                   _buildSection(
@@ -149,13 +153,17 @@ class OccurrenceDetailBottomSheet extends StatelessWidget {
                         _buildInfoRow(
                           icon: Icons.access_time,
                           label: 'Criado em',
-                          value: occurrence.createdAt.toString().toTimeAgo(),
+                          value: occurrence.createdAt.toString().toTimeAgo(
+                            locale: locale,
+                          ),
                         ),
                         const SizedBox(height: 12),
                         _buildInfoRow(
                           icon: Icons.update,
                           label: 'Atualizado em',
-                          value: occurrence.updatedAt.toString().toTimeAgo(),
+                          value: occurrence.updatedAt.toString().toTimeAgo(
+                            locale: locale,
+                          ),
                         ),
                         const SizedBox(height: 12),
                         _buildInfoRow(
@@ -181,48 +189,69 @@ class OccurrenceDetailBottomSheet extends StatelessWidget {
                             color: colors.primaryColor.withValues(alpha: 0.2),
                           ),
                         ),
-                        child: Row(
-                          spacing: 12,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Icon(
-                              Icons.inventory_2,
-                              color: colors.primaryColor,
-                            ),
-                            Spacer(),
-                            FilledButton.icon(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                BoxDetailsBottomSheet.showBottomSheetBoxById(
-                                  occurrence.boxId!,
-                                  context,
-                                );
-                              },
-                              icon: const Icon(Icons.open_in_new, size: 16),
-                              label: const Text('Ver Caixa'),
-                              style: FilledButton.styleFrom(
-                                backgroundColor: colors.primaryColor,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.inventory_2,
+                                  color: colors.primaryColor,
                                 ),
-                              ),
-                            ),
-                            FilledButton.icon(
-                              onPressed: () {
-                                Modular.to.pushNamed(
-                                  "/box/map/${occurrence.boxId}",
-                                  arguments: occurrence.boxId,
-                                );
-                              },
-                              icon: const Icon(Icons.map, size: 16),
-                              label: const Text('Ver no Mapa'),
-                              style: FilledButton.styleFrom(
-                                backgroundColor: colors.primaryColor,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Box ID: ${occurrence.boxId!.substring(0, 8)}...',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      color: colors.primaryColor,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                FilledButton.icon(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    BoxDetailsBottomSheet.showBottomSheetBoxById(
+                                      occurrence.boxId!,
+                                      context,
+                                    );
+                                  },
+                                  icon: const Icon(Icons.open_in_new, size: 16),
+                                  label: const Text('Ver Caixa'),
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: colors.primaryColor,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
+                                    ),
+                                  ),
+                                ),
+                                FilledButton.icon(
+                                  onPressed: () {
+                                    Modular.to.pushNamed(
+                                      "/box/map/${occurrence.boxId}",
+                                      arguments: occurrence.boxId,
+                                    );
+                                  },
+                                  icon: const Icon(Icons.map, size: 16),
+                                  label: const Text('Ver no Mapa'),
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: colors.primaryColor,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -268,66 +297,67 @@ class OccurrenceDetailBottomSheet extends StatelessWidget {
                     ),
                   ],
 
-                  const SizedBox(height: 80), // Espaço para os botões
+                  SizedBox(
+                    height: occurrence.status == OccurrenceStatus.CREATED
+                        ? 100
+                        : 20,
+                  ),
                 ],
               ),
             ),
-          ),
 
-          // Botões de ação (apenas para ocorrências criadas)
-          if (occurrence.status == OccurrenceStatus.CREATED)
-            Container(
-              padding: EdgeInsets.only(
-                top: 20,
-                left: 20,
-                right: 20,
-                bottom: MediaQuery.of(context).padding.bottom + 20,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: FilledButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _showCancelDialog(context);
-                      },
-                      style: FilledButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+            // Botões de ação (apenas para ocorrências criadas)
+            if (occurrence.status == OccurrenceStatus.CREATED)
+              SafeArea(
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, -2),
                       ),
-                      icon: const Icon(Icons.cancel_outlined),
-                      label: const Text('Cancelar'),
-                    ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: FilledButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _showResolveDialog(context);
-                      },
-                      style: FilledButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            _showCancelDialog(context);
+                          },
+                          style: FilledButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          icon: const Icon(Icons.cancel_outlined),
+                          label: const Text('Cancelar'),
+                        ),
                       ),
-                      icon: const Icon(Icons.check_circle_outline),
-                      label: const Text('Resolver'),
-                    ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            _showResolveDialog(context);
+                          },
+                          style: FilledButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          icon: const Icon(Icons.check_circle_outline),
+                          label: const Text('Resolver'),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
