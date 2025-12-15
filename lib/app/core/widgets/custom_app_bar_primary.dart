@@ -3,11 +3,11 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:hello_multlan/app/core/theme/app_colors.dart';
 import 'package:hello_multlan/gen/assets.gen.dart';
 
-class CustomAppBar extends PreferredSize {
+class CustomAppBarPrimary extends PreferredSize {
   final String title;
   final List<Widget>? actions;
 
-  CustomAppBar({
+  CustomAppBarPrimary({
     super.key,
     required this.title,
     this.actions,

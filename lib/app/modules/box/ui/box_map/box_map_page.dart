@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:hello_multlan/app/core/extensions/error_translator.dart';
 import 'package:hello_multlan/app/core/extensions/loader_message.dart';
 import 'package:hello_multlan/app/core/extensions/theme_extension.dart';
 import 'package:hello_multlan/app/core/states/command_state.dart';
+import 'package:hello_multlan/app/core/widgets/custom_app_bar_primary.dart';
 import 'package:hello_multlan/app/modules/box/commands/get_box_by_id_command.dart';
 import 'package:hello_multlan/app/modules/box/repositories/models/box_zone_enum.dart';
 import 'package:hello_multlan/app/modules/box/ui/box_map/box_map_controller.dart';
@@ -147,8 +149,13 @@ class _BoxMapPageState extends State<BoxMapPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Box Map'),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Modular.to.pushNamed("/box/form"),
+        child: const Icon(Icons.add),
+      ),
+      appBar: CustomAppBarPrimary(
+        colors: Theme.of(context).colors,
+        title: 'Box Map',
         actions: [
           IconButton(
             onPressed: () {
