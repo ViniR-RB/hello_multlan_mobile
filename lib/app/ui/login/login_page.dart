@@ -88,199 +88,211 @@ class _LoginPageState extends State<LoginPage>
                 constraints: BoxConstraints(
                   minHeight: constraints.maxHeight,
                 ),
-                child: Column(
-                  children: [
-                    // Parte superior com logo - Adaptável
-                    SizedBox(
-                      height: isExtraSmallScreen
-                          ? constraints.maxHeight * 0.25
-                          : isSmallScreen
-                          ? constraints.maxHeight * 0.3
-                          : constraints.maxHeight * 0.35,
-                      width: double.infinity,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Assets.images.logoCompleta.image(
-                            width: isExtraSmallScreen
-                                ? screenWidth * 0.6
-                                : isSmallScreen
-                                ? screenWidth * 0.7
-                                : screenWidth * 0.8,
-                            height: isExtraSmallScreen
-                                ? 80
-                                : isSmallScreen
-                                ? 100
-                                : 120,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Parte inferior com formulário - Adaptável
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: isSmallScreen ? 24.0 : 32.0,
-                          vertical: isExtraSmallScreen ? 16.0 : 24.0,
-                        ),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      // Parte superior com logo - Adaptável
+                      SizedBox(
+                        height: isExtraSmallScreen
+                            ? constraints.maxHeight * 0.25
+                            : isSmallScreen
+                            ? constraints.maxHeight * 0.3
+                            : constraints.maxHeight * 0.35,
+                        width: double.infinity,
                         child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const SizedBox(height: 24),
-
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Faça Login',
-                                  style: TextStyle(
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF1565C0),
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(height: 32),
-
-                            // Campo E-mail
-                            Text(
-                              'E-mail',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF1565C0),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              onChanged: credentials.setEmail,
-                              validator: validator.byField(
-                                credentials,
-                                "email",
-                              ),
-                              decoration: InputDecoration(
-                                hintText: 'Digite seu e-mail',
-                                hintStyle: TextStyle(color: Colors.grey[400]),
-                                filled: true,
-                                fillColor: Colors.grey[50],
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: Colors.grey[300]!,
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: Colors.grey[300]!,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: Color(0xFF1565C0),
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            const SizedBox(height: 24),
-
-                            // Campo Senha
-                            Text(
-                              'Senha',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF1565C0),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              onChanged: credentials.setPassword,
-                              validator: validator.byField(
-                                credentials,
-                                "password",
-                              ),
-                              obscureText: true,
-                              decoration: InputDecoration(
-                                hintText: 'Digite sua senha',
-                                hintStyle: TextStyle(color: Colors.grey[400]),
-                                filled: true,
-                                fillColor: Colors.grey[50],
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: Colors.grey[300]!,
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: Colors.grey[300]!,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: Color(0xFF1565C0),
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            const SizedBox(height: 16),
-
-                            ListenableBuilder(
-                              listenable: credentials,
-                              builder: (context, child) {
-                                return SizedBox(
-                                  width: double.infinity,
-                                  height: 50,
-                                  child: ElevatedButton(
-                                    onPressed: _isValid()
-                                        ? () {
-                                            widget.controller.login(
-                                              credentials,
-                                            );
-                                          }
-                                        : null,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Color(0xFF1565C0),
-                                      disabledBackgroundColor: Colors.grey[300],
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      "Entrar",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
+                            Assets.images.logoCompleta.image(
+                              width: isExtraSmallScreen
+                                  ? screenWidth * 0.6
+                                  : isSmallScreen
+                                  ? screenWidth * 0.7
+                                  : screenWidth * 0.8,
+                              height: isExtraSmallScreen
+                                  ? 80
+                                  : isSmallScreen
+                                  ? 100
+                                  : 120,
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  ],
+
+                      // Parte inferior com formulário - Adaptável
+                      Expanded(
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(30),
+                              topRight: Radius.circular(30),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isSmallScreen ? 24.0 : 32.0,
+                              vertical: isExtraSmallScreen ? 16.0 : 24.0,
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 24),
+
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Faça Login',
+                                      style: TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF1565C0),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                const SizedBox(height: 32),
+
+                                // Campo E-mail
+                                Text(
+                                  'E-mail',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xFF1565C0),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                TextFormField(
+                                  onChanged: credentials.setEmail,
+                                  validator: validator.byField(
+                                    credentials,
+                                    "email",
+                                  ),
+                                  decoration: InputDecoration(
+                                    hintText: 'Digite seu e-mail',
+                                    hintStyle: TextStyle(
+                                      color: Colors.grey[400],
+                                    ),
+                                    filled: true,
+                                    fillColor: Colors.grey[50],
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide(
+                                        color: Colors.grey[300]!,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide(
+                                        color: Colors.grey[300]!,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide(
+                                        color: Color(0xFF1565C0),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                const SizedBox(height: 24),
+
+                                // Campo Senha
+                                Text(
+                                  'Senha',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xFF1565C0),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                TextFormField(
+                                  onChanged: credentials.setPassword,
+                                  validator: validator.byField(
+                                    credentials,
+                                    "password",
+                                  ),
+                                  obscureText: true,
+                                  decoration: InputDecoration(
+                                    hintText: 'Digite sua senha',
+                                    hintStyle: TextStyle(
+                                      color: Colors.grey[400],
+                                    ),
+                                    filled: true,
+                                    fillColor: Colors.grey[50],
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide(
+                                        color: Colors.grey[300]!,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide(
+                                        color: Colors.grey[300]!,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide(
+                                        color: Color(0xFF1565C0),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                const SizedBox(height: 16),
+
+                                ListenableBuilder(
+                                  listenable: credentials,
+                                  builder: (context, child) {
+                                    return SizedBox(
+                                      width: double.infinity,
+                                      height: 50,
+                                      child: ElevatedButton(
+                                        onPressed: _isValid()
+                                            ? () {
+                                                widget.controller.login(
+                                                  credentials,
+                                                );
+                                              }
+                                            : null,
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Color(0xFF1565C0),
+                                          disabledBackgroundColor:
+                                              Colors.grey[300],
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                        ),
+                                        child: Text(
+                                          "Entrar",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 16),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
